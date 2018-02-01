@@ -1,4 +1,4 @@
-FROM redis:latest
+FROM redis:4.0.7
 
 ENV LIBDIR /usr/lib/redis/modules
 ENV DEPS "python python-setuptools python-pip build-essential wget autoconf libtool automake git openssh-client"
@@ -9,5 +9,5 @@ RUN set -ex;\
     apt-get install -y --no-install-recommends $deps;
 # Instal python deps
 RUN set -ex; \
-    pip install rmtest ramp-packer awscli;
+    pip install -U rmtest ramp-packer awscli;
 
