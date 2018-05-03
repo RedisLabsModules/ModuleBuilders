@@ -1,4 +1,4 @@
-FROM redis:4.0.7
+FROM redis:latest
 
 ENV LIBDIR /usr/lib/redis/modules
 ENV DEPS "python python-setuptools python-pip build-essential wget autoconf libtool automake git openssh-client python-dev"
