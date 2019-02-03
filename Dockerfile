@@ -1,7 +1,8 @@
-FROM redis:latest
+FROM redis:5.0.3
 
 ENV LIBDIR /usr/lib/redis/modules
 ENV DEPS "python python-setuptools python-pip build-essential wget autoconf libtool automake git openssh-client python-dev cmake"
+ENV PYDEPS "rmtest ramp-packer awscli mkdocs mkdocs-material mkdocs-extensions"
 
 # Set up a build environment
 RUN set -ex;\
@@ -11,4 +12,4 @@ RUN set -ex;\
 
 # Install python deps
 RUN set -ex; \
-    pip install -U rmtest ramp-packer awscli mkdocs mkdocs-material mkdocs-extensions;
+    pip install -U $PYDEPS;
