@@ -10,10 +10,10 @@ jobs:
       - run:
           name: Setup
           command: |
-            git submodule update --init --recurse
+            git submodule update --init --recursive
             ./deps/readies/bin/getpy2
             apt-get install -y make
-            echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+            echo "$DOCKER_REDISFAB_PWD" | docker login --username redisfab --password-stdin
       - run:
           name: Build & publish
           command: |
