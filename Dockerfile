@@ -1,15 +1,31 @@
-FROM redis:5.0.4
+# BUILD redisfab/rmbuilder:${REDIS_VER}-${ARCH}-${OSNICK}
 
-ENV LIBDIR /usr/lib/redis/modules
-ENV DEPS "python python-setuptools python-pip build-essential wget autoconf libtool automake git openssh-client python-dev cmake"
-ENV PYDEPS "rmtest ramp-packer awscli mkdocs mkdocs-material mkdocs-extensions"
+ARG REDIS_VER=5.0.7
 
-# Set up a build environment
-RUN set -ex;\
-    deps="$DEPS";\
-    apt-get update; \
-    apt-get install -y --no-install-recommends $deps;
+# OSNICK=bionic|stretch|buster
+ARG OSNICK=buster
 
-# Install python deps
-RUN set -ex; \
-    pip install -U $PYDEPS;
+# OS=debian:buster-slim|debian:stretch-slim|ubuntu:bionic
+ARG OS=debian:buster-slim
+
+# ARCH=x64|arm64v8|arm32v7
+ARG ARCH=x64
+
+#----------------------------------------------------------------------------------------------
+FROM redisfab/redis:${REDIS_VER}-${ARCH}-${OSNICK} AS redis
+FROM ${OS}
+
+WORKDIR /build
+COPY --from=redis /usr/local/ /usr/local/
+
+ADD ./ /build
+WORKDIR /build
+
+RUN ./deps/readies/bin/getpy2
+RUN ./deps/readies/bin/getpy3
+RUN ./system-setup.py
+
+RUN ./modules/ai/system-setup.py
+RUN ./modules/gears/system-setup.py
+RUN ./modules/search/system-setup.py
+RUN ./modules/timeseries/system-setup.py
