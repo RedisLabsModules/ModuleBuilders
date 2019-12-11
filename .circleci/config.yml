@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: 'redislabsmodules/rmbuilder:latest'
+      - image: 'circleci/python:buster'
     steps:
       - checkout
       - setup_remote_docker
@@ -13,6 +13,7 @@ jobs:
             git submodule update --init --recurse
             ./deps/readies/bin/getpy2
             apt-get install -y make
+            echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
       - run:
           name: Build & publish
           command: |
