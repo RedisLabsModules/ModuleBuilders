@@ -1,17 +1,31 @@
-FROM redis:5.0.5
+# BUILD redisfab/rmbuilder:${REDIS_VER}-${ARCH}-${OSNICK}
 
-ENV LIBDIR /usr/lib/redis/modules
+ARG REDIS_VER=5.0.7
 
-# Set up a build environment
-RUN apt-get -qq update
-RUN apt-get -q install -y --no-install-recommends python python-setuptools python-pip python-dev
-RUN apt-get -q install -y --no-install-recommends wget curl ca-certificates openssh-client awscli
-RUN apt-get -q install -y --no-install-recommends build-essential autoconf libtool automake git
-RUN set -e ;\
-	curl -s -o /tmp/cmake.sh https://cmake.org/files/v3.14/cmake-3.14.5-Linux-x86_64.sh ;\
-	bash /tmp/cmake.sh 
+# OSNICK=bionic|stretch|buster
+ARG OSNICK=buster
 
-# Install python deps
-RUN pip install -U git+https://github.com/RedisLabsModules/RLTest.git@master
-RUN pip install -U git+https://github.com/RedisLabs/RAMP.git@master
-RUN pip install mkdocs mkdocs-material mkdocs-extensions
+# OS=debian:buster-slim|debian:stretch-slim|ubuntu:bionic
+ARG OS=debian:buster-slim
+
+# ARCH=x64|arm64v8|arm32v7
+ARG ARCH=x64
+
+#----------------------------------------------------------------------------------------------
+FROM redisfab/redis:${REDIS_VER}-${ARCH}-${OSNICK} AS redis
+FROM ${OS}
+
+WORKDIR /build
+COPY --from=redis /usr/local/ /usr/local/
+
+ADD ./ /build
+WORKDIR /build
+
+RUN ./deps/readies/bin/getpy2
+RUN ./deps/readies/bin/getpy3
+RUN ./system-setup.py
+
+RUN ./modules/ai/system-setup.py
+RUN ./modules/gears/system-setup.py
+RUN ./modules/search/system-setup.py
+RUN ./modules/timeseries/system-setup.py
