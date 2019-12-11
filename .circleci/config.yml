@@ -14,13 +14,21 @@ jobs:
             apt-get -q install -y git make
             git submodule update --init --recursive
             ./deps/readies/bin/getpy2
-            echo "$DOCKER_REDISFAB_PWD" | docker login --username redisfab --password-stdin
+            docker login -u redisfab -p $DOCKER_REDISFAB_PWD
       - run:
-          name: Build & publish
-          command: |
-            make build publish X64=1 OSNICK=buster
+          name: Build debian:buster
+          command: make build publish X64=1 OSNICK=buster
             make build publish X64=1 OSNICK=centos7
             make build publish X64=1 OSNICK=bionic
+          no_output_timeout: 30m
+      - run:
+          name: Build centos7
+          command: make build publish X64=1 OSNICK=centos7
+          no_output_timeout: 30m
+      - run:
+          name: Build ubuntu:bionic
+          command: make build publish X64=1 OSNICK=bionic
+          no_output_timeout: 30m
 
 workflows:
   version: 2
