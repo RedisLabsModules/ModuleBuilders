@@ -35,6 +35,11 @@ workflows:
   build_and_package:
     jobs:
       - build:
+          pre-steps:
+            - run:
+                command: |
+                  apt-get -qq update
+                  apt-get -q install -y git openssh-client
           filters:
             tags:
               only: /.*/

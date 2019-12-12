@@ -17,7 +17,7 @@ WORKDIR /src
 CMD make distclean && make -j 4 && make package
 ```
 
-# Another example Dockerfile:
+## Another example Dockerfile:
 
 ```docker
 FROM redisfab/rmbuilder:x64-buster
