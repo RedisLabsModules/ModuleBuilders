@@ -39,7 +39,8 @@ workflows:
             - run:
                 command: |
                   apt-get -qq update
-                  apt-get -q install -y git openssh-client
+                  apt-get -q install -y git openssh-client curl ca-certificates
+                  bash <(curl -fsSL https://get.docker.com)
           filters:
             tags:
               only: /.*/
