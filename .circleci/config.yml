@@ -3,29 +3,42 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: 'circleci/python:buster'
+      - image: 'debian:buster'
     steps:
       - checkout
       - setup_remote_docker
       - run:
           name: Setup
           command: |
-            git submodule update --init --recurse
+            git submodule update --init --recursive
             ./deps/readies/bin/getpy2
-            apt-get install -y make
-            echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+            # echo "$DOCKER_REDISFAB_PWD" | docker login --username redisfab --password-stdin
+            docker login --username redisfab --password "$DOCKER_REDISFAB_PWD"
       - run:
-          name: Build & publish
-          command: |
-            make build publish X64=1 OSNICK=buster
-            make build publish X64=1 OSNICK=centos7
-            make build publish X64=1 OSNICK=bionic
+          name: Build debian:buster
+          command: make build publish X64=1 OSNICK=buster
+          no_output_timeout: 30m
+      - run:
+          name: Build centos7
+          command: make build publish X64=1 OSNICK=centos7
+          no_output_timeout: 30m
+      - run:
+          name: Build ubuntu:bionic
+          command: make build publish X64=1 OSNICK=bionic
+          no_output_timeout: 30m
 
 workflows:
   version: 2
   build_and_package:
     jobs:
       - build:
+          pre-steps:
+            - run:
+                name: Setup executor
+                command: |
+                  apt-get -qq update
+                  apt-get -q install -y git openssh-client curl ca-certificates make tar gzip
+                  bash <(curl -fsSL https://get.docker.com)
           filters:
             tags:
               only: /.*/
