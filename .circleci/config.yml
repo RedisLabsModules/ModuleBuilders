@@ -14,12 +14,10 @@ jobs:
             apt-get -q install -y git make
             git submodule update --init --recursive
             ./deps/readies/bin/getpy2
-            docker login -u redisfab -p $DOCKER_REDISFAB_PWD
+            echo "$DOCKER_REDISFAB_PWD" | docker login --username redisfab --password-stdin
       - run:
           name: Build debian:buster
           command: make build publish X64=1 OSNICK=buster
-            make build publish X64=1 OSNICK=centos7
-            make build publish X64=1 OSNICK=bionic
           no_output_timeout: 30m
       - run:
           name: Build centos7
@@ -37,6 +35,7 @@ workflows:
       - build:
           pre-steps:
             - run:
+                name: Setup CircleCI image
                 command: |
                   apt-get -qq update
                   apt-get -q install -y git openssh-client curl ca-certificates
