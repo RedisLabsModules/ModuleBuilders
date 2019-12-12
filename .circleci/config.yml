@@ -10,11 +10,10 @@ jobs:
       - run:
           name: Setup
           command: |
-            apt-get -qq update
-            apt-get -q install -y git make
             git submodule update --init --recursive
             ./deps/readies/bin/getpy2
-            echo "$DOCKER_REDISFAB_PWD" | docker login --username redisfab --password-stdin
+            # echo "$DOCKER_REDISFAB_PWD" | docker login --username redisfab --password-stdin
+            docker login --username redisfab --password "$DOCKER_REDISFAB_PWD"
       - run:
           name: Build debian:buster
           command: make build publish X64=1 OSNICK=buster
@@ -35,10 +34,10 @@ workflows:
       - build:
           pre-steps:
             - run:
-                name: Setup CircleCI image
+                name: Setup executor
                 command: |
                   apt-get -qq update
-                  apt-get -q install -y git openssh-client curl ca-certificates
+                  apt-get -q install -y git openssh-client curl ca-certificates make tar gzip
                   bash <(curl -fsSL https://get.docker.com)
           filters:
             tags:
