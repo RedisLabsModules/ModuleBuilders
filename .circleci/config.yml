@@ -5,6 +5,12 @@ jobs:
     docker:
       - image: 'debian:buster'
     steps:
+      - run:
+          name: Setup executor
+          command: |
+            apt-get -qq update
+            apt-get -q install -y git openssh-client curl ca-certificates make tar gzip
+            bash <(curl -fsSL https://get.docker.com)
       - checkout
       - setup_remote_docker
       - run:
@@ -29,16 +35,9 @@ jobs:
 
 workflows:
   version: 2
-  periodic_build:
+  build_all:
     jobs:
       - build:
-          pre-steps:
-            - run:
-                name: Setup executor
-                command: |
-                  apt-get -qq update
-                  apt-get -q install -y git openssh-client curl ca-certificates make tar gzip
-                  bash <(curl -fsSL https://get.docker.com)
           filters:
             tags:
               only: /.*/
@@ -52,11 +51,4 @@ workflows:
                only:
                  - master
     jobs:
-      - build:
-          pre-steps:
-            - run:
-                name: Setup executor
-                command: |
-                  apt-get -qq update
-                  apt-get -q install -y git openssh-client curl ca-certificates make tar gzip
-                  bash <(curl -fsSL https://get.docker.com)
+      - build
