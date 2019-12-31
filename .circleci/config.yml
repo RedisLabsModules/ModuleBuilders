@@ -52,4 +52,4 @@ workflows:
                only:
                  - master
     jobs:
-      - periodic_build
+      - build
