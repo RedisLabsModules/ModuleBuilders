@@ -29,7 +29,7 @@ jobs:
 
 workflows:
   version: 2
-  build_and_package:
+  periodic_build:
     jobs:
       - build:
           pre-steps:
@@ -52,4 +52,4 @@ workflows:
                only:
                  - master
     jobs:
-      - build
+      - periodic_build
