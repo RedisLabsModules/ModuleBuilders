@@ -52,4 +52,11 @@ workflows:
                only:
                  - master
     jobs:
-      - build
+      - build:
+          pre-steps:
+            - run:
+                name: Setup executor
+                command: |
+                  apt-get -qq update
+                  apt-get -q install -y git openssh-client curl ca-certificates make tar gzip
+                  bash <(curl -fsSL https://get.docker.com)
