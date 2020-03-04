@@ -27,5 +27,6 @@ RUN ./system-setup.py
 
 RUN ./modules/ai/system-setup.py
 RUN ./modules/gears/system-setup.py
+RUN ./modules/graph/system-setup.py
 RUN ./modules/search/system-setup.py
 RUN ./modules/timeseries/system-setup.py
