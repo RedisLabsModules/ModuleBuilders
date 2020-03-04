@@ -53,8 +53,9 @@ class RedisGearsSetup(paella.Setup):
         self.install("which") # required by pipenv (on docker)
         self.install("libatomic file")
 
-        self.run("wget -q -O /tmp/epel-release-latest-7.noarch.rpm http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm")
-        self.run("rpm -Uv /tmp/epel-release-latest-7.noarch.rpm ")
+        # self.run("wget -q -O /tmp/epel-release-latest-7.noarch.rpm http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm")
+        # self.run("rpm -Uv /tmp/epel-release-latest-7.noarch.rpm ")
+        self.install("epel-release")
 
         self.run("dir=$(mktemp -d /tmp/tar.XXXXXX); cd $dir; wget -q https://ftp.gnu.org/gnu/tar/tar-1.32.tar.gz; tar xzf tar-1.32.tar.gz; cd tar-1.32; "+
             "FORCE_UNSAFE_CONFIGURE=1 ./configure && make && make install; " +
@@ -65,7 +66,7 @@ class RedisGearsSetup(paella.Setup):
         self.install("python-gevent python-ujson")
 
         # uninstall and install psutil (order is important), otherwise RLTest fails
-        self.run("pip uninstall -y psutil")
+        self.run("pip uninstall -y psutil || true")
         self.install("python2-psutil")
 
         self.pip_install("pipenv")
@@ -81,7 +82,7 @@ class RedisGearsSetup(paella.Setup):
         self.install("which libatomic file")
 
         # uninstall and install psutil (order is important), otherwise RLTest fails
-        self.run("pip uninstall -y psutil")
+        self.run("pip uninstall -y psutil || true")
         self.install("python2-psutil")
 
         self.install("python2-ujson")
