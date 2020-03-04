@@ -29,7 +29,7 @@ class RedisGraphSetup(paella.Setup):
     def redhat_compat(self):
         self.group_install("'Development Tools'")
         self.install("redhat-lsb-core")
-		self.pip_install("psutil")
+        self.pip_install("psutil")
 
     def fedora(self):
         self.group_install("'Development Tools'")
