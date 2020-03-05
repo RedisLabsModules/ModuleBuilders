@@ -32,7 +32,7 @@ class RediSearchSetup(paella.Setup):
         self.install("redhat-lsb-core")
 
         # uninstall and install psutil (order is important), otherwise RLTest fails
-        self.run("pip uninstall -y psutil || true")
+        # self.run("pip uninstall -y psutil || true")
         self.install("python2-psutil")
 
     def fedora(self):

@@ -66,7 +66,7 @@ class RedisGearsSetup(paella.Setup):
         self.install("python-gevent python-ujson")
 
         # uninstall and install psutil (order is important), otherwise RLTest fails
-        self.run("pip uninstall -y psutil || true")
+        # self.run("pip uninstall -y psutil || true")
         self.install("python2-psutil")
 
         self.pip_install("pipenv")
@@ -82,7 +82,7 @@ class RedisGearsSetup(paella.Setup):
         self.install("which libatomic file")
 
         # uninstall and install psutil (order is important), otherwise RLTest fails
-        self.run("pip uninstall -y psutil || true")
+        # self.run("pip uninstall -y psutil || true")
         self.install("python2-psutil")
 
         self.install("python2-ujson")
