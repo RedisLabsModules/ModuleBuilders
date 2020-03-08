@@ -12,17 +12,21 @@ REDIS_VER ?= 5.0.7
 REPO=redisfab
 STEM=$(REPO)/rmbuilder
 
-OS.trusty=ubuntu:xenial # 14
-OS.xenial=ubuntu:xenial # 16
-OS.bionic=ubuntu:bionic # 18
-OS.stretch=debian:stretch-slim # 9
-OS.buster=debian:buster-slim # 10
+OS.trusty=ubuntu:trusty
+OS.xenial=ubuntu:xenial
+OS.bionic=ubuntu:bionic
+OS.stretch=debian:stretch-slim
+OS.buster=debian:buster-slim
 OS.centos6=centos:6.10
 OS.centos7=centos:7.6.1810
 OS.centos8=centos:8
 OS.fedora=fedora:30
 OS.fedora30=fedora:30
-OS=$(OS.$(OSNICK))
+OS:=$(OS.$(OSNICK))
+
+ifeq ($(OS),)
+$(error cannot determine OS for OSNICK $(OSNICK))
+endif
 
 BUILD_OPT=--rm
 # --squash
@@ -50,21 +54,21 @@ $(eval $(call targets,PUBLISH,publish))
 
 define build_x64
 build_x64:
-	@echo "Building $(STEM):x64-$(OSNICK) ($(OS)) with Redis $(REDIS_VER)"
-	@docker build $(BUILD_OPT) -t $(STEM):x64-$(OSNICK) -f Dockerfile \
+	@echo "Building $(STEM):$(REDIS_VER)-x64-$(OSNICK) ($(OS))"
+	@docker build $(BUILD_OPT) -t $(STEM):$(REDIS_VER)-x64-$(OSNICK) -f Dockerfile \
 		$(CACHE_ARG) \
 		--build-arg ARCH=x64 \
 		--build-arg OSNICK=$(OSNICK) \
 		--build-arg OS=$(OS) \
 		--build-arg REDIS_VER=$(REDIS_VER) \
 		.
-		
+
 .PHONY: build_x64
 endef
 
 define build_arm # (1=arch)
 build_$(1): 
-	@docker build $(BUILD_OPT) -t $(STEM)-xbuild:$(1)-$(OSNICK) -f Dockerfile.arm \
+	@docker build $(BUILD_OPT) -t $(STEM)-xbuild:$(REDIS_VER)-$(1)-$(OSNICK) -f Dockerfile.arm \
 		--build-arg ARCH=$(1) \
 		--build-arg OSNICK=$(OSNICK) \
 		--build-arg OS=$(OS) \
@@ -78,7 +82,7 @@ endef
 
 define publish_x64
 publish_x64:
-	@docker push $(STEM):x64-$(OSNICK)
+	@docker push $(STEM):$(REDIS_VER)-x64-$(OSNICK)
 
 .PHONY: publish_x64
 endef
