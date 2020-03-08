@@ -1,30 +1,33 @@
 [![GitHub issues](https://img.shields.io/github/release/RedisLabsModules/ModuleBuildDocker.svg?kill_cache=1)](https://github.com/RedisLabsModules/ModuleBuildDocker/releases/latest)
 [![CircleCI](https://circleci.com/gh/RedisLabsModules/ModuleBuildDocker/tree/master.svg?style=svg)](https://circleci.com/gh/RedisLabsModules/ModuleBuildDocker/tree/master)
-[![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/redislabsmodules/rmbuilder.svg)](https://hub.docker.com/r/redislabsmodules/rmbuilder/builds/)
+[![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/redisfab/rmbuilder.svg)](https://hub.docker.com/r/redisfab/rmbuilder/builds/)
 
 # ModuleBuildDocker
-Docker file for creating the base image for module build environments
+Docker image for constructing platform-specific, optimized build environment for Redis Modules.
+Note that this image is to be used primarily in CI for purpose of optimizing build times, and better not be relied on for satisfying build requirements (for this, we have each module's system-seup.py script and Dockerfiles).
 
-# Example Dockerfile using this image:
+# How to build
 
-```docker
-FROM redislabsmodules/rmbuilder:latest
+Display build instuctions:
+```sh
+$ make help
+make [build|publish] [X64=1|ARM8=1|ARM7=1] [OSNICK=<nick> | OS=<os>] [REDIS_VERSION=<ver>] [ARGS...]
 
-# Build the source
-ADD ./src /src
-WORKDIR /src
+build    Build image(s)
+publish  Push image(s) to Docker Hub
 
-CMD make distclean && make -j 4 && make package
+Arguments:
+OS         OS Docker image name (e.g., debian:buster-slim)
+OSNICK     buster|stretch|xenial|bionic|centos6|centos7|centos8|fedora30
+REDIS_VER  Redis version (e.g. 5.0.7)
+TEST=1     Run tests after build
+CACHE=0    Build without cache
 ```
 
-## Another example Dockerfile:
-
-```docker
-FROM redisfab/rmbuilder:x64-buster
-
-# Build the source
-ADD ./src /src
-WORKDIR /src
-
-CMD make distclean && make -j 4 && make package
+Typical build (this will build and publish images for the common platforms):
+```sh
+make build publish X64=1 OSNICK=buster  REDIS_VER=5.0.7
+make build publish X64=1 OSNICK=centos7 REDIS_VER=5.0.7
+make build publish X64=1 OSNICK=bionic  REDIS_VER=5.0.7
 ```
+
