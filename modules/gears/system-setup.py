@@ -55,7 +55,13 @@ class RedisGearsSetup(paella.Setup):
 
         # self.run("wget -q -O /tmp/epel-release-latest-7.noarch.rpm http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm")
         # self.run("rpm -Uv /tmp/epel-release-latest-7.noarch.rpm ")
-        self.install("epel-release")
+        # self.install("epel-release")
+
+        self.run("""
+            dir=$(mktemp -d /tmp/tar.XXXXXX)
+            (cd $dir; wget -q -O tar.tgz http://redismodules.s3.amazonaws.com/gnu/gnu-tar-1.32-x64-centos7.tgz; tar -xzf tar.tgz -C /; )
+            rm -rf $dir
+            """)
 
         # pip cannot build gevent on ARM
         self.install("python-gevent python-ujson")
