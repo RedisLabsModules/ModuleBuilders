@@ -2,7 +2,6 @@
 
 import sys
 import os
-from subprocess import Popen, PIPE
 import argparse
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../deps/readies"))
@@ -93,9 +92,7 @@ class RedisGearsSetup(paella.Setup):
         self.install("valgrind")
 
     def macosx(self):
-        p = Popen('xcode-select -p', stdout=PIPE, close_fds=True, shell=True)
-        out, _ = p.communicate()
-        if out.splitlines() == []:
+        if sh('xcode-select -p') == '':
             fatal("Xcode tools are not installed. Please run xcode-select --install.")
         self.install("libtool autoconf automake llvm")
         self.install("zlib openssl readline coreutils")
@@ -106,11 +103,8 @@ class RedisGearsSetup(paella.Setup):
         self.pip_install("pipenv gevent")
 
     def common_last(self):
-        # this is due to rmbuilder older versions. should be removed once fixed.
-        # self.run("pip uninstall -y -q redis redis-py-cluster ramp-packer RLTest rmtest semantic-version || true")
         # redis-py-cluster should be installed from git due to redis-py dependency
         self.pip_install("--no-cache-dir git+https://github.com/Grokzen/redis-py-cluster.git@master")
-        # the following can be probably installed from pypi
         self.pip_install("--no-cache-dir git+https://github.com/RedisLabsModules/RLTest.git@master")
         self.pip_install("--no-cache-dir git+https://github.com/RedisLabs/RAMP@master")
 
