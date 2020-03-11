@@ -26,27 +26,30 @@ class RedisModuleBuilderSetup(paella.Setup):
     #------------------------------------------------------------------------------------------
     def debian_compat(self):
         self.install("build-essential")
-
+        self.install("openssh-client")
         self.install("python-regex")
-
-        self.install_git_lfs_on_linux()
 
     #------------------------------------------------------------------------------------------
     def redhat_compat(self):
         self.group_install("'Development Tools'")
+        
         self.install("redhat-lsb-core")
-
         self.install("epel-release")
+        
+        self.install("openssh-clients")
         self.install("python2-regex")
-
-        self.install_git_lfs_on_linux()
 
     #------------------------------------------------------------------------------------------
     def fedora(self):
         self.group_install("'Development Tools'")
+        self.install("openssh-clients")
         self.install("python2-regex")
-        self.install_git_lfs_on_linux()
 
+    #------------------------------------------------------------------------------------------
+    def linux_last(self):
+        self.run("curl -fsSL https://get.docker.com | bash -s")
+        self.install_git_lfs_on_linux()
+    
     #------------------------------------------------------------------------------------------
     def macosx(self):
         p = Popen('xcode-select -p', stdout=PIPE, close_fds=True, shell=True)
@@ -60,12 +63,11 @@ class RedisModuleBuilderSetup(paella.Setup):
         self.install("git-lfs")
 
     #------------------------------------------------------------------------------------------
-
     def common_last(self):
         self.install("valgrind")
 
         self.pip_install("mkdocs mkdocs-material mkdocs-extensions")
-        self.pip_install("pytest redis redis-py-cluster rmtest")
+        self.pip_install("pytest rmtest")
 
 #----------------------------------------------------------------------------------------------
 
