@@ -5,7 +5,7 @@ OSNICK ?= buster
 
 # OS ?= debian:buster-slim
 
-REDIS_VER ?= 5.0.7
+REDIS_VER ?= 5.0.8
 
 #----------------------------------------------------------------------------------------------
 
@@ -28,6 +28,7 @@ ifeq ($(OS),)
 $(error cannot determine OS for OSNICK $(OSNICK))
 endif
 
+DOCKER=docker
 BUILD_OPT=--rm
 # --squash
 
@@ -55,7 +56,8 @@ $(eval $(call targets,PUBLISH,publish))
 define build_x64
 build_x64:
 	@echo "Building $(STEM):$(REDIS_VER)-x64-$(OSNICK) ($(OS))"
-	@docker build $(BUILD_OPT) -t $(STEM):$(REDIS_VER)-x64-$(OSNICK) -f Dockerfile \
+	@$(DOCKER) pull $(OS)
+	@$(DOCKER) build $(BUILD_OPT) -t $(STEM):$(REDIS_VER)-x64-$(OSNICK) -f Dockerfile \
 		$(CACHE_ARG) \
 		--build-arg ARCH=x64 \
 		--build-arg OSNICK=$(OSNICK) \
@@ -68,7 +70,7 @@ endef
 
 define build_arm # (1=arch)
 build_$(1): 
-	@docker build $(BUILD_OPT) -t $(STEM)-xbuild:$(REDIS_VER)-$(1)-$(OSNICK) -f Dockerfile.arm \
+	@$(DOCKER) build $(BUILD_OPT) -t $(STEM)-xbuild:$(REDIS_VER)-$(1)-$(OSNICK) -f Dockerfile.arm \
 		--build-arg ARCH=$(1) \
 		--build-arg OSNICK=$(OSNICK) \
 		--build-arg OS=$(OS) \
@@ -82,14 +84,14 @@ endef
 
 define publish_x64
 publish_x64:
-	@docker push $(STEM):$(REDIS_VER)-x64-$(OSNICK)
+	@$(DOCKER) push $(STEM):$(REDIS_VER)-x64-$(OSNICK)
 
 .PHONY: publish_x64
 endef
 
 define publish_arm # (1=arch)
 publish_$(1):
-	@docker push $(STEM)-xbuild:$(REDIS_VER)-$(1)-$(OSNICK)
+	@$(DOCKER) push $(STEM)-xbuild:$(REDIS_VER)-$(1)-$(OSNICK)
 
 .PHONY: publish_$(1)
 endef
@@ -113,14 +115,14 @@ $(eval $(call publish_arm,arm32v7))
 #----------------------------------------------------------------------------------------------
 
 define HELP
-make [build|publish] [X64=1|ARM8=1|ARM7=1] [OSNICK=<nick> | OS=<os>] [REDIS_VERSION=<ver>] [ARGS...]
+make [build|publish] [X64=1|ARM8=1|ARM7=1] [OSNICK=<nick> | OS=<os>] [REDIS_VER=<ver>] [ARGS...]
 
 build    Build image(s)
 publish  Push image(s) to Docker Hub
 
 Arguments:
-OS         OS Docker image name (e.g., debian:buster-slim)
 OSNICK     buster|stretch|xenial|bionic|centos6|centos7|centos8|fedora30
+OS         (optional) OS Docker image name (e.g., debian:buster-slim)
 REDIS_VER  Redis version (e.g. $(REDIS_VER))
 TEST=1     Run tests after build
 CACHE=0    Build without cache
