@@ -65,8 +65,6 @@ class RedisModuleBuilderSetup(paella.Setup):
     #------------------------------------------------------------------------------------------
     def common_last(self):
         self.install("valgrind")
-
-        self.pip_install("mkdocs mkdocs-material mkdocs-extensions")
         self.pip_install("pytest rmtest")
 
 #----------------------------------------------------------------------------------------------
