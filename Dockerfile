@@ -1,6 +1,6 @@
 # BUILD redisfab/rmbuilder:${REDIS_VER}-${ARCH}-${OSNICK}
 
-ARG REDIS_VER=5.0.8
+ARG REDIS_VER=6.0.1
 
 # OSNICK=bionic|stretch|buster
 ARG OSNICK=buster
@@ -22,12 +22,14 @@ ADD ./ /build
 WORKDIR /build
 
 RUN ./deps/readies/bin/getpy2
-RUN ./deps/readies/bin/getpy3
 RUN ./system-setup.py
 
 RUN ./modules/gears/system-setup.py
 RUN ./modules/graph/system-setup.py
 RUN ./modules/search/system-setup.py
 RUN ./modules/timeseries/system-setup.py
+
+RUN ./deps/readies/bin/getpy3
+RUN ./system-setup-docs.py
 
 RUN ./modules/ai/system-setup.py

@@ -5,7 +5,7 @@ OSNICK ?= buster
 
 # OS ?= debian:buster-slim
 
-REDIS_VER ?= 5.0.8
+REDIS_VER ?= 6.0.1
 
 #----------------------------------------------------------------------------------------------
 
@@ -15,6 +15,7 @@ STEM=$(REPO)/rmbuilder
 OS.trusty=ubuntu:trusty
 OS.xenial=ubuntu:xenial
 OS.bionic=ubuntu:bionic
+OS.focal=ubuntu:focal
 OS.stretch=debian:stretch-slim
 OS.buster=debian:buster-slim
 OS.centos6=centos:6.10
