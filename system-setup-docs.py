@@ -18,7 +18,8 @@ class RedisModuleBuilderSetup(paella.Setup):
         self.setup_pip()
         self.pip3_install("wheel")
         self.pip3_install("setuptools --upgrade")
-        self.pip3_install("mkdocs mkdocs-material mkdocs-extensions")
+        if self.osnick == 'centos7' or self.osnick == 'bionic':
+            self.pip3_install("mkdocs mkdocs-material mkdocs-extensions")
 
 #----------------------------------------------------------------------------------------------
 
