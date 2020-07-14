@@ -29,7 +29,7 @@ RUN ./modules/graph/system-setup.py
 RUN ./modules/search/system-setup.py
 RUN ./modules/timeseries/system-setup.py
 
-RUN ./deps/readies/bin/getpy3
+RUN FORCE=1 ./deps/readies/bin/getpy3
 RUN ./system-setup-docs.py
 
 RUN ./modules/ai/system-setup.py

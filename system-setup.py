@@ -26,6 +26,15 @@ class RedisModuleBuilderSetup(paella.Setup):
     #------------------------------------------------------------------------------------------
     def debian_compat(self):
         self.install("build-essential")
+        if self.osnick == 'trusty':
+            # # install python3.6
+            # self.add_repo("ppa:deadsnakes/ppa")
+            # self.install("python3.6")
+            # self.run("ln -sf `which python3.6` /usr/local/bin/python3")
+            # install gcc-7
+            self.add_repo("ppa:ubuntu-toolchain-r/test")
+            self.install("gcc-7 g++-7")
+            self.run("update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 60 --slave /usr/bin/g++ g++ /usr/bin/g++-7")
         self.install("openssh-client")
         self.install("python-regex")
 
