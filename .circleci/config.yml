@@ -63,23 +63,28 @@ on-master-and-version-tags: &on-master-and-version-tags
     tags:
       only: /^v[0-9].*/
 
+
 workflows:
   version: 2
   build_all:
     jobs:
-      - build:
-          name: build-centos7
-          platform: centos7
-          <<: *on-any-branch
-      - build:
-          name: build-bionic
-          platform: bionic
-          <<: *on-any-branch
-      - build:
-          name: build-xenial
-          platform: xenial
-          <<: *on-any-branch
-      - build:
+#      - build:
+#          name: build-buster
+#          platform: buster
+#          <<: *on-any-branch
+#      - build:
+#          name: build-centos7
+#          platform: centos7
+#          <<: *on-any-branch
+#      - build:
+#          name: build-bionic
+#          platform: bionic
+#          <<: *on-any-branch
+#      - build:
+#          name: build-xenial
+#          platform: xenial
+#          <<: *on-any-branch
+#      - build:
           name: build-trusty
           platform: trusty
           <<: *on-any-branch
@@ -90,6 +95,9 @@ workflows:
           cron: "21 17 * * 0"
           <<: *on-master
     jobs:
+      - build:
+          name: build-buster
+          platform: buster
       - build:
           name: build-centos7
           platform: centos7

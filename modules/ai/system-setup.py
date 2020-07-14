@@ -13,6 +13,8 @@ import paella
 class RedisAISetup(paella.Setup):
     def __init__(self, nop=False):
         paella.Setup.__init__(self, nop)
+        if self.osnick == 'xenial' or self.osnick == 'trusty':
+            exit(0)
 
     def common_first(self):
         self.install_downloaders()
