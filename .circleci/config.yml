@@ -25,7 +25,11 @@ jobs:
             docker login --username redisfab --password "$DOCKER_REDISFAB_PWD"
       - run:
           name: Build and publish
-          command: make build publish X64=1 OSNICK=<<parameters.platform>>
+          command: |
+            make build X64=1 OSNICK=<<parameters.platform>>
+            if [[ $CIRCLE_BRANCH == master ]]; then
+                make publish X64=1 OSNICK=<<parameters.platform>>
+            fi
           no_output_timeout: 30m
 
 
@@ -68,22 +72,22 @@ workflows:
   version: 2
   build_all:
     jobs:
-#      - build:
-#          name: build-buster
-#          platform: buster
-#          <<: *on-any-branch
-#      - build:
-#          name: build-centos7
-#          platform: centos7
-#          <<: *on-any-branch
-#      - build:
-#          name: build-bionic
-#          platform: bionic
-#          <<: *on-any-branch
-#      - build:
-#          name: build-xenial
-#          platform: xenial
-#          <<: *on-any-branch
+      - build:
+          name: build-buster
+          platform: buster
+          <<: *on-any-branch
+      - build:
+          name: build-centos7
+          platform: centos7
+          <<: *on-any-branch
+      - build:
+          name: build-bionic
+          platform: bionic
+          <<: *on-any-branch
+      - build:
+          name: build-xenial
+          platform: xenial
+          <<: *on-any-branch
       - build:
           name: build-trusty
           platform: trusty
