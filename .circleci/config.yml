@@ -84,7 +84,7 @@ workflows:
 #          name: build-xenial
 #          platform: xenial
 #          <<: *on-any-branch
-#      - build:
+      - build:
           name: build-trusty
           platform: trusty
           <<: *on-any-branch
