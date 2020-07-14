@@ -90,4 +90,15 @@ workflows:
           cron: "21 17 * * 0"
           <<: *on-master
     jobs:
-      - build
+      - build:
+          name: build-centos7
+          platform: centos7
+      - build:
+          name: build-bionic
+          platform: bionic
+      - build:
+          name: build-xenial
+          platform: xenial
+      - build:
+          name: build-trusty
+          platform: trusty
