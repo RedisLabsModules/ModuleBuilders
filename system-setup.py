@@ -27,10 +27,6 @@ class RedisModuleBuilderSetup(paella.Setup):
     def debian_compat(self):
         self.install("build-essential")
         if self.osnick == 'trusty':
-            # # install python3.6
-            # self.add_repo("ppa:deadsnakes/ppa")
-            # self.install("python3.6")
-            # self.run("ln -sf `which python3.6` /usr/local/bin/python3")
             # install gcc-7
             self.add_repo("ppa:ubuntu-toolchain-r/test")
             self.install("gcc-7 g++-7")

@@ -1,6 +1,6 @@
 .NOTPARALLEL:
 
-# OSNICK=buster|stretch|xenial|bionic|centos6|centos7|centos8|fedora30
+# OSNICK=buster|stretch|trusty|xenial|bionic|centos6|centos7|centos8|fedora30
 OSNICK ?= buster
 
 # OS ?= debian:buster-slim
@@ -19,10 +19,10 @@ OS.focal=ubuntu:focal
 OS.stretch=debian:stretch-slim
 OS.buster=debian:buster-slim
 OS.centos6=centos:6.10
-OS.centos7=centos:7.6.1810
+OS.centos7=centos:7.8.2003
 OS.centos8=centos:8
-OS.fedora=fedora:30
-OS.fedora30=fedora:30
+OS.fedora=fedora:33
+OS.fedora33=fedora:33
 OS:=$(OS.$(OSNICK))
 
 ifeq ($(OS),)

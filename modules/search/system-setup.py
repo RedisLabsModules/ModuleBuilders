@@ -19,7 +19,7 @@ class RediSearchSetup(paella.Setup):
         self.pip_install("wheel")
         self.pip_install("setuptools --upgrade")
 
-        self.install("git cmake wget awscli lcov")
+        self.install("git cmake wget lcov")
 
     def debian_compat(self):
         self.install("libatomic1")
@@ -30,10 +30,6 @@ class RediSearchSetup(paella.Setup):
         self.install("libatomic")
         self.group_install("'Development Tools'")
         self.install("redhat-lsb-core")
-
-        # uninstall and install psutil (order is important), otherwise RLTest fails
-        # self.run("pip uninstall -y psutil || true")
-        self.install("python2-psutil")
 
     def fedora(self):
         self.install("libatomic")
@@ -50,7 +46,7 @@ class RediSearchSetup(paella.Setup):
         if not self.has_command("RLTest"):
             self.pip_install("git+https://github.com/RedisLabsModules/RLTest.git@master")
         self.pip_install("redis-py-cluster")
-        self.pip_install("pudb")
+        self.pip_install("pudb awscli")
 
 #----------------------------------------------------------------------------------------------
 

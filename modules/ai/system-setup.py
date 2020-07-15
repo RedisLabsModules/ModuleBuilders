@@ -19,12 +19,12 @@ class RedisAISetup(paella.Setup):
     def common_first(self):
         self.install_downloaders()
         self.setup_pip()
-        self.pip3_install("wheel virtualenv")
-        self.pip3_install("setuptools --upgrade")
+        self.pip_install("wheel virtualenv")
+        self.pip_install("setuptools --upgrade")
 
         if self.os == 'linux':
             self.install("ca-certificates")
-        self.install("git cmake unzip wget patchelf awscli")
+        self.install("git cmake unzip wget patchelf")
         self.install("coreutils") # for realpath
 
     def debian_compat(self):
@@ -43,7 +43,7 @@ class RedisAISetup(paella.Setup):
         else:
             self.run("amazon-linux-extras install epel", output_on_error=True)
             self.install("python3 python3-devel")
-            self.pip3_install("psutil")
+            self.pip_install("psutil")
 
         self.install_git_lfs_on_linux()
 
@@ -64,15 +64,16 @@ class RedisAISetup(paella.Setup):
 
     def common_last(self):
         # redis-py-cluster should be installed from git due to redis-py dependency
-        self.pip3_install("--no-cache-dir git+https://github.com/Grokzen/redis-py-cluster.git@master")
+        self.pip_install("--no-cache-dir git+https://github.com/Grokzen/redis-py-cluster.git@master")
         # the following can be probably installed from pypi
-        self.pip3_install("--no-cache-dir git+https://github.com/RedisLabsModules/RLTest.git@master")
-        self.pip3_install("--no-cache-dir git+https://github.com/RedisLabs/RAMP@master")
+        self.pip_install("--no-cache-dir git+https://github.com/RedisLabsModules/RLTest.git@master")
+        self.pip_install("--no-cache-dir git+https://github.com/RedisLabs/RAMP@master")
 
         root = os.path.join(os.path.dirname(__file__), "..")
-        # self.pip3_install("-r {}/test/test_requirements.txt".format(root))
+        # self.pip_install("-r {}/test/test_requirements.txt".format(root))
 
-        self.pip3_install("mkdocs mkdocs-material mkdocs-extensions")
+        self.pip_install("awscli")
+        self.pip_install("mkdocs mkdocs-material mkdocs-extensions")
 
 #----------------------------------------------------------------------------------------------
 
