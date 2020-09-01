@@ -1,6 +1,6 @@
 # BUILD redisfab/rmbuilder:${REDIS_VER}-${ARCH}-${OSNICK}
 
-ARG REDIS_VER=6.0.5
+ARG REDIS_VER=6.0.6
 
 # OSNICK=bionic|stretch|buster
 ARG OSNICK=buster
