@@ -22,7 +22,7 @@ ADD rmbuilder/* /build/
 ADD deps/ /build/deps
 WORKDIR /build
 
-RUN ./deps/readies/bin/getpy2
+RUN ./deps/readies/bin/getpy3
 RUN ./system-setup.py
 
 RUN ./gears/system-setup.py
@@ -30,8 +30,6 @@ RUN ./graph/system-setup.py
 RUN ./search/system-setup.py
 RUN ./rscoordinator/system-setup.py
 RUN ./timeseries/system-setup.py
-
-RUN ./deps/readies/bin/getpy3
-RUN ./system-setup-docs.py
-
 RUN ./ai/system-setup.py
+
+RUN ./system-setup-docs.py

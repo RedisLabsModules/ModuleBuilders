@@ -26,8 +26,8 @@ WORKDIR /build
 ADD ./python/. . 
 ADD ./deps/readies/ /build/deps/readies/
 
-RUN ./deps/readies/bin/getpy2
-RUN python2 ./system-setup.py
+RUN ./deps/readies/bin/getpy3
+RUN python3 ./system-setup.py
 
 RUN git clone https://github.com/python/cpython.git
 WORKDIR /build/cpython
