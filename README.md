@@ -1,7 +1,7 @@
-[![CircleCI](https://circleci.com/gh/RedisLabsModules/ModuleBuildDocker/tree/master.svg?style=svg)](https://circleci.com/gh/RedisLabsModules/ModuleBuildDocker/tree/master)
+[![CircleCI](https://circleci.com/gh/RedisLabsModules/ModuleBuilders/tree/master.svg?style=svg)](https://circleci.com/gh/RedisLabsModules/ModuleBuilders/tree/master)
 [![Dockerhub](https://img.shields.io/badge/dockerhub-rmbuilder-blue)](https://hub.docker.com/r/redisfab/rmbuilder/tags) 
 
-# ModuleBuildDocker
+# ModuleBuilders
 Docker image for constructing platform-specific, optimized build environment for Redis Modules.
 Note that this image is to be used primarily in CI for purpose of optimizing build times, and better not be relied on for satisfying build requirements (for this, we have each module's system-seup.py script and Dockerfiles).
 
