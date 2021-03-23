@@ -17,21 +17,30 @@ class RedisTimeSeriesSetup(paella.Setup):
         paella.Setup.__init__(self, nop)
 
     def common_first(self):
-        self.setup_pip()
         self.pip_install("wheel")
         self.pip_install("setuptools --upgrade")
 
         self.install("git jq curl")
 
     def debian_compat(self):
-        self.install("build-essential")
+        self.run("%s/bin/getgcc" % READIES)
 
     def redhat_compat(self):
-        self.group_install("'Development Tools'")
+        self.run("%s/bin/getgcc" % READIES)
         self.install("redhat-lsb-core")
+        self.run("%s/bin/getepel" % READIES)
+        if self.dist == "amzn":
+            self.run("amazon-linux-extras install epel")
+            self.install("python3-devel")
+        else:
+            self.install("python3-devel libaec-devel")
 
     def fedora(self):
-        self.group_install("'Development Tools'")
+        self.run("%s/bin/getgcc" % READIES)
+        self.install("python3-networkx")
+
+    def archlinux(self):
+        self.install("lcov-git", aur=True)
 
     def macos(self):
         self.install_gnu_utils()
@@ -41,11 +50,10 @@ class RedisTimeSeriesSetup(paella.Setup):
         self.install_gnu_utils()
 
     def common_last(self):
-        self.install("lcov")
-        if not self.has_command("ramp"):
-            self.pip_install("git+https://github.com/RedisLabs/RAMP@master")
-        # self.pip_install("-r tests/requirements.txt")
-        self.pip_install("jinja2")
+        if not self.has_command("lcov"):
+            self.install("lcov")
+        self.run("python3 %s/bin/getrmpytools" % READIES)
+        self.pip_install("-r tests/flow/requirements.txt")
 
 #----------------------------------------------------------------------------------------------
 

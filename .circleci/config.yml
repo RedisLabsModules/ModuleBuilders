@@ -83,44 +83,23 @@ workflows:
   build_all:
     jobs:
       - platform-builder:
-          name: build-buster
-          platform: buster
+          name: build
           <<: *on-any-branch
-      - platform-builder:
-          name: build-centos7
-          platform: centos7
-          <<: *on-any-branch
-      - platform-builder:
-          name: build-bionic
-          platform: bionic
-          <<: *on-any-branch
-      - platform-builder:
-          name: build-xenial
-          platform: xenial
-          <<: *on-any-branch
-      - platform-builder:
-          name: build-trusty
-          platform: trusty
-          <<: *on-any-branch
+          matrix:
+            parameters:
+              platform: [buster, centos7, bionic, xenial, trusty]
   weekly:
     triggers:
       - schedule:
           # Run on Sundat 21:17 [M H DoM M DoW]
           cron: "21 17 * * 0"
-          <<: *on-master
+          filters:
+            branches:
+              only:
+                - master
     jobs:
       - platform-builder:
-          name: build-buster
-          platform: buster
-      - platform-builder:
-          name: build-centos7
-          platform: centos7
-      - platform-builder:
-          name: build-bionic
-          platform: bionic
-      - platform-builder:
-          name: build-xenial
-          platform: xenial
-      - platform-builder:
-          name: build-trusty
-          platform: trusty
+          name: build
+          matrix:
+            parameters:
+              platform: [buster, centos7, bionic, xenial, trusty]

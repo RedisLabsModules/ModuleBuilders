@@ -5,7 +5,7 @@ import os
 import argparse
 
 HERE = os.path.abspath(os.path.dirname(__file__))
-ROOT = os.path.abspath(os.path.join(HERE, ".."))
+ROOT = os.path.abspath(os.path.join(HERE, "../../.."))
 READIES = os.path.join(ROOT, "deps/readies")
 sys.path.insert(0, READIES)
 import paella
@@ -34,12 +34,7 @@ class RediSearchSetup(paella.Setup):
         self.run("%s/bin/getgcc --modern" % READIES)
 
         # fix setuptools
-        self.run("yum remove -y python-setuptools || true")
         self.pip_install("-IU --force-reinstall setuptools")
-
-        # uninstall and install psutil (order is important), otherwise RLTest fails
-        # self.run("pip uninstall -y psutil || true")
-        # self.install("python2-psutil")
 
     def fedora(self):
         self.install("libatomic")
@@ -47,15 +42,18 @@ class RediSearchSetup(paella.Setup):
 
     def macos(self):
         self.install_gnu_utils()
+        self.install("pkg-config")
+
+        # for now depending on redis from brew, it's version6 with TLS.
         self.run("{PYTHON} {READIES}/bin/getredis -v 6 --force".format(PYTHON=self.python, READIES=READIES))
 
     def common_last(self):
-        self.run("%s/bin/getcmake" % READIES)
-        self.install("lcov")
-
+        self.run("{PYTHON} {READIES}/bin/getcmake".format(PYTHON=self.python, READIES=READIES))
         self.run("{PYTHON} {READIES}/bin/getrmpytools".format(PYTHON=self.python, READIES=READIES))
-        # self.pip_install("-r %s/tests/pytests/requirements.txt" % ROOT)
+        self.install("lcov")
         self.pip_install("pudb awscli")
+
+        self.pip_install("-r %s/tests/pytests/requirements.txt" % ROOT)
 
 #----------------------------------------------------------------------------------------------
 
