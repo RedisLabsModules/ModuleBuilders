@@ -23,13 +23,14 @@ ADD deps/ /build/deps
 
 RUN ./deps/readies/bin/getpy2
 RUN ./deps/readies/bin/getpy3
-RUN ./system-setup.py
+RUN python2 ./system-setup.py
+RUN python3 ./system-setup.py
 
-RUN ./gears/system-setup.py
-RUN ./graph/system-setup.py
-RUN ./search/system-setup.py
-RUN ./rscoordinator/system-setup.py
-RUN ./timeseries/system-setup.py
-RUN ./ai/system-setup.py
+RUN python2 ./gears/system-setup.py
+RUN python3 ./graph/system-setup.py
+RUN python2 ./search/system-setup.py
+RUN python2 ./rscoordinator/system-setup.py
+RUN python3 ./timeseries/system-setup.py
+RUN python3 ./ai/system-setup.py
 
 RUN ./system-setup-docs.py

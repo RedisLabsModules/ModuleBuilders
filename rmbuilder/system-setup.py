@@ -19,7 +19,6 @@ class RedisModuleBuilderSetup(paella.Setup):
     #------------------------------------------------------------------------------------------
     def common_first(self):
         self.install_downloaders()
-        self.setup_pip()
         self.pip_install("wheel")
         self.pip_install("setuptools --upgrade")
 
@@ -28,15 +27,16 @@ class RedisModuleBuilderSetup(paella.Setup):
 
     #------------------------------------------------------------------------------------------
     def debian_compat(self):
-        self.install("build-essential")
         if self.osnick == 'trusty':
             self.run("%s/bin/getgcc --modern" % READIES)
+        else:
+            self.run("%s/bin/getgcc" % READIES)
         self.install("openssh-client")
         self.install("python-regex")
 
     #------------------------------------------------------------------------------------------
     def redhat_compat(self):
-        self.group_install("'Development Tools'")
+        self.run("%s/bin/getgcc" % READIES)
 
         self.install("redhat-lsb-core")
         self.install("epel-release")
@@ -46,7 +46,7 @@ class RedisModuleBuilderSetup(paella.Setup):
 
     #------------------------------------------------------------------------------------------
     def fedora(self):
-        self.group_install("'Development Tools'")
+        self.run("%s/bin/getgcc" % READIES)
         self.install("openssh-clients")
         self.install("python2-regex")
 
