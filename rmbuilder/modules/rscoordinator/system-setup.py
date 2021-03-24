@@ -52,7 +52,7 @@ class RedisRSCoordinatorSetup(paella.Setup):
 
     def common_last(self):
         self.run("%s/bin/getcmake" % READIES)
-        self.run("{PYTHON} {READIES}/bin/getrmpytools".format(PYTHON=self.python, READIES=READIES))
+        # self.run("{PYTHON} {READIES}/bin/getrmpytools".format(PYTHON=self.python, READIES=READIES))
         self.pip_install("awscli pudb")
 
 #----------------------------------------------------------------------------------------------

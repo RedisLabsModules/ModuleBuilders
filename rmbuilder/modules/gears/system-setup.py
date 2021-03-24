@@ -13,108 +13,83 @@ import paella
 #----------------------------------------------------------------------------------------------
 
 class RedisGearsSetup(paella.Setup):
-    def __init__(self, nop=False):
-        paella.Setup.__init__(self, nop)
+    def __init__(self, nop=False, with_python=True):
+        paella.Setup.__init__(self, nop=nop)
+        self.with_python = with_python
 
     def common_first(self):
         self.install_downloaders()
 
-        self.setup_pip()
         self.pip_install("wheel")
         self.pip_install("setuptools --upgrade")
 
-        self.install("git")
+        self.install("git openssl")
 
     def debian_compat(self):
-        self.install("build-essential autotools-dev autoconf libtool gawk")
-        self.install("libbz2-dev liblzma-dev lzma-dev libncurses5-dev libsqlite3-dev uuid-dev zlib1g-dev libssl-dev libreadline-dev libffi-dev")
-        if sh("apt-cache search libgdbm-compat-dev") != "":
-            self.install("libgdbm-compat-dev")
-        self.install("libgdbm-dev")
-        self.install("tcl-dev tix-dev tk-dev")
+        self.run("%s/bin/getgcc" % READIES)
+        self.install("autotools-dev autoconf libtool")
 
-        self.install("vim-common") # for xxd
         self.install("lsb-release")
-        self.install("zip unzip")
+        self.install("zip unzip gawk")
 
         # pip cannot build gevent on ARM
-        self.install("python-psutil python-gevent")
-        self.pip_install("pipenv")
+        if self.platform.is_arm() and self.dist == 'ubuntu' and self.os_version[0] < 20:
+            self.install("python-gevent")
+        else:
+            self.pip_install("gevent")
 
     def redhat_compat(self):
-        self.group_install("'Development Tools'")
+        self.run("%s/bin/getgcc --modern" % READIES)
         self.install("autoconf automake libtool")
-
-        self.install("bzip2-devel expat-devel gdbm-devel glibc-devel gmp-devel libffi-devel libuuid-devel ncurses-devel "
-            "openssl-devel readline-devel sqlite-devel xz-devel zlib-devel")
-        self.install("tcl-devel tix-devel tk-devel")
 
         self.install("redhat-lsb-core")
-        self.install("vim-common") # for xxd
         self.install("zip unzip")
-        self.install("which") # required by pipenv (on docker)
         self.install("libatomic file")
 
-        # self.run("wget -q -O /tmp/epel-release-latest-7.noarch.rpm http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm")
-        # self.run("rpm -Uv /tmp/epel-release-latest-7.noarch.rpm ")
-        # self.install("epel-release")
+        self.run("%s/bin/getepel" % READIES)
 
-        self.run("""
-            dir=$(mktemp -d /tmp/tar.XXXXXX)
-            (cd $dir; wget -q -O tar.tgz http://redismodules.s3.amazonaws.com/gnu/gnu-tar-1.32-x64-centos7.tgz; tar -xzf tar.tgz -C /; )
-            rm -rf $dir
-            """)
+        if self.arch == 'x64':
+            self.install_linux_gnu_tar()
 
-        # pip cannot build gevent on ARM
-        self.install("python-gevent python-ujson")
-
-        # uninstall and install psutil (order is important), otherwise RLTest fails
-        # self.run("pip uninstall -y psutil || true")
-        self.install("python2-psutil")
-
-        self.pip_install("pipenv")
+        if self.platform.is_arm() or self.dist == 'centos' and self.os_version[0] == 8:
+            self.install("python3-gevent python3-ujson")
+        else:
+            self.pip_install("gevent ujson")
 
     def fedora(self):
-        self.group_install("'Development Tools'")
-        self.install("autoconf automake libtool")
-        self.install("bzip2-devel expat-devel gdbm-devel glibc-devel gmp-devel libffi-devel libnsl2-devel libuuid-devel ncurses-devel "
-            "openssl-devel readline-devel sqlite-devel xz-devel zlib-devel")
-        self.install("tcl-devel tix-devel tk-devel")
+        self.run("%s/bin/getgcc" % READIES)
 
-        self.install("vim-common") # for xxd
-        self.install("which libatomic file")
-
-        # uninstall and install psutil (order is important), otherwise RLTest fails
-        # self.run("pip uninstall -y psutil || true")
-        self.install("python2-psutil")
+        self.install("libatomic file")
 
         self.install("python2-ujson")
-        self.pip_install("pipenv gevent")
+        self.pip_install("gevent")
 
     def linux_last(self):
         self.install("valgrind")
 
-    def macosx(self):
-        if sh('xcode-select -p') == '':
-            fatal("Xcode tools are not installed. Please run xcode-select --install.")
-        self.install("libtool autoconf automake llvm")
-        self.install("zlib openssl readline coreutils")
-        self.install("redis")
+    def macos(self):
+        self.install("make libtool autoconf automake")
+
+        self.install("openssl readline coreutils")
+        if not self.has_command("redis-server"):
+            self.install("redis")
         self.install("binutils") # into /usr/local/opt/binutils
         self.install_gnu_utils()
 
-        self.pip_install("pipenv gevent")
+        self.pip_install("gevent")
 
     def common_last(self):
-        # redis-py-cluster should be installed from git due to redis-py dependency
-        self.pip_install("--no-cache-dir git+https://github.com/Grokzen/redis-py-cluster.git@master")
-        self.pip_install("--no-cache-dir git+https://github.com/RedisLabsModules/RLTest.git@master")
-        self.pip_install("--no-cache-dir git+https://github.com/RedisLabs/RAMP@master")
+        if self.with_python:
+            self.run("{PYTHON} {HERE}/build/cpython/system-setup.py {NOP}".
+                     format(PYTHON=self.python, HERE=HERE, NOP="--nop" if self.runner.nop else ""),
+                     output=True)
+        # self.run("{PYTHON} {READIES}/bin/getrmpytools".format(PYTHON=self.python, READIES=READIES))
 
 #----------------------------------------------------------------------------------------------
 
 parser = argparse.ArgumentParser(description='Set up system for RedisGears build.')
 parser.add_argument('-n', '--nop', action="store_true", help='no operation')
+parser.add_argument('--with-python', action="store_true", default=True, help='with Python')
 args = parser.parse_args()
 
-RedisGearsSetup(nop = args.nop).setup()
+RedisGearsSetup(nop = args.nop, with_python=args.with_python).setup()
