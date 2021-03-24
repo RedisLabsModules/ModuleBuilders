@@ -59,7 +59,7 @@ class RediSearchSetup(paella.Setup):
             self.install("lcov-git", aur=True)
         self.pip_install("pudb awscli")
 
-        self.pip_install("-r %s/tests/pytests/requirements.txt" % ROOT)
+        # self.pip_install("-r %s/tests/pytests/requirements.txt" % ROOT)
 
 #----------------------------------------------------------------------------------------------
 

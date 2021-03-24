@@ -52,8 +52,8 @@ class RedisTimeSeriesSetup(paella.Setup):
     def common_last(self):
         if not self.has_command("lcov"):
             self.install("lcov")
-        self.run("python3 %s/bin/getrmpytools" % READIES)
-        self.pip_install("-r tests/flow/requirements.txt")
+        # self.run("python3 %s/bin/getrmpytools" % READIES)
+        # self.pip_install("-r tests/flow/requirements.txt")
 
 #----------------------------------------------------------------------------------------------
 
