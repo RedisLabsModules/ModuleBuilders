@@ -21,11 +21,9 @@ COPY --from=redis /usr/local/ /usr/local/
 ADD rmbuilder/* /build/
 ADD deps/ /build/deps
 
-WORKDIR /build/rmbuilder
 RUN ./deps/readies/bin/getpy3
 RUN ./system-setup.py
 
-WORKDIR /build/rmbuilder/modueles
 RUN ./gears/system-setup.py
 RUN ./graph/system-setup.py
 RUN ./search/system-setup.py
@@ -33,5 +31,4 @@ RUN ./rscoordinator/system-setup.py
 RUN ./timeseries/system-setup.py
 RUN ./ai/system-setup.py
 
-WORKDIR /build/rmbuilder
 RUN ./system-setup-docs.py

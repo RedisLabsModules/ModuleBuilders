@@ -83,7 +83,7 @@ workflows:
   build_all:
     jobs:
       - platform-builder:
-          name: build
+          name: build-<< matrix.platform >>
           <<: *on-any-branch
           matrix:
             parameters:
@@ -99,7 +99,7 @@ workflows:
                 - master
     jobs:
       - platform-builder:
-          name: build-<< matrix.platform >>
+          name: weekly-build-<< matrix.platform >>
           matrix:
             parameters:
               platform: [buster, centos7, focal, bionic, xenial, trusty]
