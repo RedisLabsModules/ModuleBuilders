@@ -99,7 +99,7 @@ workflows:
                 - master
     jobs:
       - platform-builder:
-          name: build
+          name: build-<< matrix.platform >>
           matrix:
             parameters:
-              platform: [buster, centos7, bionic, xenial, trusty]
+              platform: [buster, centos7, focal, bionic, xenial, trusty]
