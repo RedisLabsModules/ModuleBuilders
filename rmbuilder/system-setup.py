@@ -32,7 +32,7 @@ class RedisModuleBuilderSetup(paella.Setup):
         else:
             self.run("%s/bin/getgcc" % READIES)
         self.install("openssh-client")
-        self.install("python-regex")
+        # self.install("python-regex")
 
     #------------------------------------------------------------------------------------------
     def redhat_compat(self):

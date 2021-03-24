@@ -20,7 +20,7 @@ class RedisAISetup(paella.Setup):
         self.install_downloaders()
         self.pip_install("wheel")
 
-        self.install("git unzip patchelf")
+        self.install("git unzip") # patchelf
         self.install("coreutils") # for realpath
 
     def debian_compat(self):
