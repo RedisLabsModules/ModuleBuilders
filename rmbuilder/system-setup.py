@@ -1,10 +1,13 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 import sys
 import os
 import argparse
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "deps/readies"))
+HERE = os.path.abspath(os.path.dirname(__file__))
+ROOT = HERE
+READIES = os.path.join(ROOT, "deps/readies")
+sys.path.insert(0, READIES)
 import paella
 
 #----------------------------------------------------------------------------------------------
@@ -16,7 +19,6 @@ class RedisModuleBuilderSetup(paella.Setup):
     #------------------------------------------------------------------------------------------
     def common_first(self):
         self.install_downloaders()
-        self.setup_pip()
         self.pip_install("wheel")
         self.pip_install("setuptools --upgrade")
 
@@ -25,50 +27,44 @@ class RedisModuleBuilderSetup(paella.Setup):
 
     #------------------------------------------------------------------------------------------
     def debian_compat(self):
-        self.install("build-essential")
         if self.osnick == 'trusty':
-            # install gcc-7
-            self.add_repo("ppa:ubuntu-toolchain-r/test")
-            self.install("gcc-7 g++-7")
-            self.run("update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 60 --slave /usr/bin/g++ g++ /usr/bin/g++-7")
+            self.run("%s/bin/getgcc --modern" % READIES)
+        else:
+            self.run("%s/bin/getgcc" % READIES)
         self.install("openssh-client")
-        self.install("python-regex")
+        # self.install("python-regex")
 
     #------------------------------------------------------------------------------------------
     def redhat_compat(self):
-        self.group_install("'Development Tools'")
-        
+        self.run("%s/bin/getgcc" % READIES)
+
         self.install("redhat-lsb-core")
         self.install("epel-release")
-        
+
         self.install("openssh-clients")
         self.install("python2-regex")
 
     #------------------------------------------------------------------------------------------
     def fedora(self):
-        self.group_install("'Development Tools'")
+        self.run("%s/bin/getgcc" % READIES)
         self.install("openssh-clients")
         self.install("python2-regex")
 
     #------------------------------------------------------------------------------------------
     def linux_last(self):
-        self.run("curl -fsSL https://get.docker.com | bash -s")
+        # self.run("%s/bin/getdocker" % READIES)
         self.install_git_lfs_on_linux()
-    
-    #------------------------------------------------------------------------------------------
-    def macosx(self):
-        p = Popen('xcode-select -p', stdout=PIPE, close_fds=True, shell=True)
-        out, _ = p.communicate()
-        if out.splitlines() == []:
-            fatal("Xcode tools are not installed. Please run xcode-select --install.")
 
+    #------------------------------------------------------------------------------------------
+    def macos(self):
         self.install("redis")
         self.install("binutils") # into /usr/local/opt/binutils
-
         self.install("git-lfs")
 
     #------------------------------------------------------------------------------------------
     def common_last(self):
+        self.run("python2 {READIES}/bin/getrmpytools".format(PYTHON=self.python, READIES=READIES))
+        self.run("python3 {READIES}/bin/getrmpytools".format(PYTHON=self.python, READIES=READIES))
         self.install("valgrind")
         self.pip_install("pytest rmtest")
 

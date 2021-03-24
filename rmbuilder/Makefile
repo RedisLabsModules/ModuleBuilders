@@ -5,7 +5,7 @@ OSNICK ?= buster
 
 # OS ?= debian:buster-slim
 
-REDIS_VER ?= 6.0.9
+REDIS_VER ?= 6.2.1
 
 #----------------------------------------------------------------------------------------------
 
@@ -64,7 +64,7 @@ build_x64:
 		--build-arg OSNICK=$(OSNICK) \
 		--build-arg OS=$(OS) \
 		--build-arg REDIS_VER=$(REDIS_VER) \
-		.
+		..
 
 .PHONY: build_x64
 endef
@@ -76,7 +76,7 @@ build_$(1):
 		--build-arg OSNICK=$(OSNICK) \
 		--build-arg OS=$(OS) \
 		--build-arg REDIS_VER=$(REDIS_VER) \
-		.
+		..
 
 .PHONY: build_$(1)
 endef
