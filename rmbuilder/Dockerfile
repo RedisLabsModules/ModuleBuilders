@@ -32,5 +32,6 @@ RUN python2 ./search/system-setup.py
 RUN python2 ./rscoordinator/system-setup.py
 RUN python3 ./timeseries/system-setup.py
 RUN python3 ./ai/system-setup.py
+RUN python3 ./redisjson/system-setup.py
 
 RUN ./system-setup-docs.py
