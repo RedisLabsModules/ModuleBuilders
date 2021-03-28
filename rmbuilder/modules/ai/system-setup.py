@@ -21,7 +21,8 @@ class RedisAISetup(paella.Setup):
         self.pip_install("wheel")
 
         self.install("git unzip") # patchelf
-        self.install("coreutils") # for realpath
+        if self.osnick != 'centos8':
+            self.install("coreutils") # for realpath
 
     def debian_compat(self):
         self.run("%s/bin/getgcc" % READIES)
