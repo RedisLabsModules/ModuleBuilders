@@ -43,13 +43,13 @@ class RedisModuleBuilderSetup(paella.Setup):
         self.install("epel-release")
 
         self.install("openssh-clients")
-        self.install("python2-regex")
+        # self.install("python2-regex")
 
     #------------------------------------------------------------------------------------------
     def fedora(self):
         self.run("%s/bin/getgcc" % READIES)
         self.install("openssh-clients")
-        self.install("python2-regex")
+        # self.install("python2-regex")
 
     #------------------------------------------------------------------------------------------
     def linux_last(self):
