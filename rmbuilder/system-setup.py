@@ -23,7 +23,8 @@ class RedisModuleBuilderSetup(paella.Setup):
         self.pip_install("setuptools --upgrade")
 
         self.install("git")
-        self.install("coreutils") # for realpath
+        if self.osnick != 'centos8':
+            self.install("coreutils") # for realpath
 
     #------------------------------------------------------------------------------------------
     def debian_compat(self):
