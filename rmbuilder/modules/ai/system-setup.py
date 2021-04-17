@@ -25,6 +25,7 @@ class RedisAISetup(paella.Setup):
             self.install("coreutils") # for realpath
 
     def debian_compat(self):
+        self.run("%s/bin/enable-utf8" % READIES)
         self.run("%s/bin/getgcc" % READIES)
         self.install("gawk")
         self.install("libssl-dev")
@@ -36,12 +37,11 @@ class RedisAISetup(paella.Setup):
         self.install_git_lfs_on_linux()
 
     def redhat_compat(self):
+        self.run("%s/bin/enable-utf8" % READIES)
         self.run("%s/bin/getepel" % READIES)
         self.install("redhat-lsb-core")
-        self.run("%s/bin/enable-utf8" % READIES)
 
         self.run("%s/bin/getgcc --modern" % READIES)
-        # self.install("llvm-toolset-7")
 
         if self.arch == 'x64':
             self.install_linux_gnu_tar()
@@ -73,7 +73,7 @@ class RedisAISetup(paella.Setup):
         if self.platform == "arm":
             self.run("%s/bin/getcmake" % READIES)
         else:
-            self.run("%s/bin/getcmake --no-repo" % READIES)
+            self.run("%s/bin/getcmake" % READIES)
 
         # self.run("{PYTHON} {READIES}/bin/getrmpytools".format(PYTHON=self.python, READIES=READIES))
 
