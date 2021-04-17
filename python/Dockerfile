@@ -43,4 +43,21 @@ FROM ${OS}
 
 COPY --from=builder /usr/local/ /usr/local/
 
+RUN set -e ;\
+    if command -v apt-get &> /dev/null; then \
+        apt-get update -qq ;\
+        apt-get install -y libssl1.1 ;\
+    elif command -v dnf &> /dev/null; then \
+        dnf install -y openssl-libs ;\
+    elif command -v yum &> /dev/null; then \
+        yum install -y openssl-libs ;\
+    elif command -v zypper &> /dev/null; then \
+        zypper install -y libopenssl1_1 ;\
+    elif command -v apk &> /dev/null; then \
+        apk update ;\
+        apk add openssl ;\
+    elif command -v pacman &> /dev/null; then \
+        pacman --noconfirm -S openssl ;\
+    fi  
+
 ENTRYPOINT ["/usr/local/bin/python3"]
