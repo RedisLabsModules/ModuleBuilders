@@ -43,6 +43,8 @@ jobs:
           no_output_timeout: 30m
 
 
+#----------------------------------------------------------------------------------------------------------------------------------
+
 on-any-branch: &on-any-branch
   filters:
     branches:
@@ -61,6 +63,28 @@ on-master: &on-master
   filters:
     branches:
       only: master
+    tags:
+      ignore: /.*/
+
+on-integ-branch: &on-integ-branch
+  filters:
+    branches:
+      only:
+        - master
+        - /^\d+\.\d+.*$/
+        - /^feature-.*$/
+    tags:
+      ignore: /.*/
+
+not-on-integ-branch: &not-on-integ-branch
+  filters:
+    branches:
+      ignore:
+        - master
+        - /^\d+\.\d+.*$/
+        - /^feature-.*$/
+    tags:
+      ignore: /.*/
 
 on-version-tags: &on-version-tags
   filters:
@@ -69,14 +93,17 @@ on-version-tags: &on-version-tags
     tags:
       only: /^v[0-9].*/
 
-on-master-and-version-tags: &on-master-and-version-tags
+on-integ-and-version-tags: &on-integ-and-version-tags
   filters:
     branches:
       only:
         - master
+        - /^\d+\.\d+.*$/
+        - /^feature-.*$/
     tags:
       only: /^v[0-9].*/
 
+#----------------------------------------------------------------------------------------------------------------------------------
 
 workflows:
   version: 2
@@ -84,10 +111,17 @@ workflows:
     jobs:
       - platform-builder:
           name: build-<< matrix.platform >>
-          <<: *on-any-branch
+          <<: *not-on-integ-branch
           matrix:
             parameters:
               platform: [buster]
+          context: common
+      - platform-builder:
+          name: integ-build-<< matrix.platform >>
+          <<: *on-integ-branch
+          matrix:
+            parameters:
+              platform: [buster, centos7, centos8, focal, bionic, xenial, trusty]
           context: common
   weekly:
     triggers:
