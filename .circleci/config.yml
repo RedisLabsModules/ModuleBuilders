@@ -121,7 +121,7 @@ workflows:
           <<: *on-integ-branch
           matrix:
             parameters:
-              platform: [buster, centos7, centos8, focal, bionic, xenial, trusty]
+              platform: [buster, centos7, centos8, focal, bionic, xenial]
           context: common
   weekly:
     triggers:
@@ -136,5 +136,5 @@ workflows:
           name: weekly-build-<< matrix.platform >>
           matrix:
             parameters:
-              platform: [buster, centos7, centos8, focal, bionic, xenial, trusty]
+              platform: [buster, centos7, centos8, focal, bionic, xenial]
           context: common
