@@ -88,6 +88,7 @@ workflows:
           matrix:
             parameters:
               platform: [buster]
+          context: common
   weekly:
     triggers:
       - schedule:
@@ -95,11 +96,11 @@ workflows:
           cron: "21 17 * * 0"
           filters:
             branches:
-              only:
-                - master
+              only: master
     jobs:
       - platform-builder:
           name: weekly-build-<< matrix.platform >>
           matrix:
             parameters:
               platform: [buster, centos7, centos8, focal, bionic, xenial, trusty]
+          context: common

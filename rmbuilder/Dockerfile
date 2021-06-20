@@ -21,8 +21,8 @@ COPY --from=redis /usr/local/ /usr/local/
 ADD rmbuilder/* /build/
 ADD deps/ /build/deps
 
-RUN ./deps/readies/bin/getpy2
-RUN ./deps/readies/bin/getpy3
+RUN FORCE=1 ./deps/readies/bin/getpy2
+RUN FORCE=1 ./deps/readies/bin/getpy3
 RUN python2 ./system-setup.py
 RUN python3 ./system-setup.py
 

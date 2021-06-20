@@ -5,7 +5,7 @@ OSNICK ?= buster
 
 # OS ?= debian:buster-slim
 
-REDIS_VER ?= 6.2.3
+REDIS_VER ?= 6.2.4
 
 #----------------------------------------------------------------------------------------------
 
@@ -21,6 +21,7 @@ OS.buster=debian:buster-slim
 OS.centos6=centos:6.10
 OS.centos7=centos:7.8.2003
 OS.centos8=centos:8
+OS.rhel8=registry.access.redhat.com/ubi8
 OS.fedora=fedora:33
 OS.fedora33=fedora:33
 OS:=$(OS.$(OSNICK))
