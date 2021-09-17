@@ -1,6 +1,6 @@
 
 CLANG_VER ?= 12
-OSNICK=strech
+OSNICK ?= bullseye
 ARCH=x64
 REDIS_VER=6
 
@@ -11,7 +11,7 @@ endif
 VIEW=/w
 
 build:
-	docker build -t $(IMAGE) --build-arg CLANG_VER=$(CLANG_VER) --build-arg REDIS_VER=$(REDIS_VER) .
+	docker build -t $(IMAGE) --build-arg CLANG_VER=$(CLANG_VER) --build-arg OSNICK=$(OSNICK) --build-arg REDIS_VER=$(REDIS_VER) .
 
 publish:
 	docker push $(IMAGE)

@@ -1,13 +1,15 @@
 # BUILD redisfab/clang:${CLANG_VER}-${ARCH}-${OSNICK}
 
+ARG OSNICK=stretch
 ARG CLANG_VER=12
 ARG CMAKE_VER=3.18.3
 ARG NINJA_VER=1.10.1
 ARG REDIS_VER=6
 
 #----------------------------------------------------------------------------------------------
-FROM debian:stretch
+FROM debian:$OSNICK
 
+ARG OSNICK
 ARG CLANG_VER
 ARG CMAKE_VER
 ARG NINJA_VER
@@ -83,5 +85,7 @@ ADD redis.blacklist /build/
 
 # build sanitizer-enabled redis-server(s)
 # `--no-run` because Clang sanitizer requires SYS_PTRACE docker capability, which is not available in docker build
-RUN ./readies/bin/getredis --version ${REDIS_VER} --no-run --suffix asan --clang-asan --clang-san-blacklist /build/redis.blacklist
-RUN ./readies/bin/getredis --version ${REDIS_VER} --no-run --suffix msan --clang-msan --llvm-dir /opt/llvm-project/build-msan --clang-san-blacklist /build/redis.blacklist
+RUN ./readies/bin/getredis --no-run -v6.0 --suffix asan-6.0 --clang-asan --clang-san-blacklist /build/redis.blacklist
+RUN ./readies/bin/getredis --no-run -v6.0 --suffix msan-6.0 --clang-msan --llvm-dir /opt/llvm-project/build-msan --clang-san-blacklist /build/redis.blacklist
+RUN ./readies/bin/getredis --no-run -v6.2 --suffix asan-6.2 --clang-asan --clang-san-blacklist /build/redis.blacklist
+RUN ./readies/bin/getredis --no-run -v6.2 --suffix msan-6.2 --clang-msan --llvm-dir /opt/llvm-project/build-msan --clang-san-blacklist /build/redis.blacklist
