@@ -3,6 +3,7 @@
 ARG CLANG_VER=12
 ARG CMAKE_VER=3.18.3
 ARG NINJA_VER=1.10.1
+ARG REDIS_VER=6
 
 #----------------------------------------------------------------------------------------------
 FROM debian:stretch
@@ -10,6 +11,7 @@ FROM debian:stretch
 ARG CLANG_VER
 ARG CMAKE_VER
 ARG NINJA_VER
+ARG REDIS_VER
 
 WORKDIR /build
 SHELL ["/bin/bash", "-c"]
@@ -20,7 +22,12 @@ SHELL ["/bin/bash", "-c"]
 RUN apt-get -qq update
 RUN apt-get install -y ca-certificates curl wget
 RUN apt-get install -y software-properties-common apt-transport-https
-RUN apt-get install -y git unzip lsb-release gnupg2
+RUN apt-get install -y git unzip lsb-release gnupg2 wget
+
+RUN wget https://people.debian.org/~paravoid/python-all/unofficial-python-all.asc -O /etc/apt/trusted.gpg.d/unofficial-python-all.asc
+RUN echo "deb http://people.debian.org/~paravoid/python-all $(lsb_release -sc) main" >> /etc/apt/sources.list.d/python-all.list
+RUN apt update
+RUN apt-get install -y python3.6
 
 RUN set -e ;\
     wget -q https://apt.llvm.org/llvm.sh ;\
@@ -67,11 +74,14 @@ RUN set -e ;\
 # Build Redis with asan/msan instrumentation
 
 RUN git clone https://github.com/RedisLabsModules/readies.git
-RUN PIP=1 ./readies/bin/getpy3
+RUN wget -q -O /tmp/get-pip.py https://bootstrap.pypa.io/pip/3.5/get-pip.py
+RUN chmod +x /tmp/get-pip.py
+RUN python3 /tmp/get-pip.py
+RUN python3 -m pip install -r readies/paella/requirements.txt
 
 ADD redis.blacklist /build/
 
 # build sanitizer-enabled redis-server(s)
 # `--no-run` because Clang sanitizer requires SYS_PTRACE docker capability, which is not available in docker build
-RUN ./readies/bin/getredis --no-run --suffix asan --clang-asan --clang-san-blacklist /build/redis.blacklist
-RUN ./readies/bin/getredis --no-run --suffix msan --clang-msan --llvm-dir /opt/llvm-project/build-msan --clang-san-blacklist /build/redis.blacklist
+RUN ./readies/bin/getredis --version ${REDIS_VER} --no-run --suffix asan --clang-asan --clang-san-blacklist /build/redis.blacklist
+RUN ./readies/bin/getredis --version ${REDIS_VER} --no-run --suffix msan --clang-msan --llvm-dir /opt/llvm-project/build-msan --clang-san-blacklist /build/redis.blacklist
