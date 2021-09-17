@@ -37,7 +37,7 @@ class RedisGearsSetup(paella.Setup):
         if self.platform.is_arm() and self.dist == 'ubuntu' and self.os_version[0] < 20:
             self.install("python-gevent")
         else:
-            self.pip_install("gevent")
+            self.pip_install("gevent~=1.2.0")
 
     def redhat_compat(self):
         self.run("%s/bin/getgcc --modern" % READIES)

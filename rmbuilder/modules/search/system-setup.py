@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 
 import sys
 import os
@@ -69,7 +69,7 @@ class RediSearchSetup(paella.Setup):
         self.pip_install("pudb awscli")
 
         if int(sh("{PYTHON} -c 'import gevent' 2> /dev/null; echo $?".format(PYTHON=self.python))) != 0:
-            self.pip_install("gevent")
+            self.pip_install("gevent~=1.2.0")
 
         # self.pip_install("-r %s/tests/pytests/requirements.txt" % ROOT)
 
