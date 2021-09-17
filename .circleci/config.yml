@@ -24,7 +24,7 @@ commands:
 jobs:
   platform-builder:
     docker:
-      - image: debian:buster
+      - image: debian:bullseye
     parameters:
       platform:
         type: string
@@ -114,14 +114,14 @@ workflows:
           <<: *not-on-integ-branch
           matrix:
             parameters:
-              platform: [buster]
+              platform: [bullseye]
           context: common
       - platform-builder:
           name: integ-build-<< matrix.platform >>
           <<: *on-integ-branch
           matrix:
             parameters:
-              platform: [buster, centos7, centos8, focal, bionic, xenial]
+              platform: [bullseye, buster, centos7, centos8, focal, bionic, xenial]
           context: common
   weekly:
     triggers:
@@ -136,5 +136,5 @@ workflows:
           name: weekly-build-<< matrix.platform >>
           matrix:
             parameters:
-              platform: [buster, centos7, centos8, focal, bionic, xenial]
+              platform: [bullseye, buster, centos7, centos8, focal, bionic, xenial]
           context: common
