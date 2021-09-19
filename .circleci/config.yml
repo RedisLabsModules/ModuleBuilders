@@ -50,7 +50,7 @@ jobs:
           name: Build and publish
           command: |
             cd rmbuilder
-            for nick in <<parameters.platform>>"; do
+            for nick in <<parameters.platforms>>"; do
                 sudo bash -l -c "make build X64=1 OSNICK=$nick"
                 ../deps/readies/bin/sep
                 if [[ $CIRCLE_BRANCH == master ]]; then
@@ -147,18 +147,14 @@ workflows:
   build_all:
     jobs:
       - platform-builder:
-          name: build-<< matrix.platform >>
+          # name: builder
           <<: *not-on-integ-branch
-          matrix:
-            parameters:
-              platforms: "bullseye"
+          platforms: "bullseye"
           context: common
       - platform-builder:
-          name: integ-build-<< matrix.platform >>
+          name: integ-platform-builder
           <<: *on-integ-branch
-          matrix:
-            parameters:
-              platforms: "bullseye centos7 centos8 focal bionic xenial"
+          platforms: "bullseye centos7 centos8 focal bionic xenial"
           context: common
   weekly:
     triggers:
@@ -170,8 +166,6 @@ workflows:
               only: master
     jobs:
       - platform-builder:
-          name: weekly-build-<< matrix.platform >>
-          matrix:
-            parameters:
-              platform: [bullseye, centos7, centos8, focal, bionic, xenial]
+          name: weekly-build
+          platforms: "bullseye centos7 centos8 focal bionic xenial"
           context: common
