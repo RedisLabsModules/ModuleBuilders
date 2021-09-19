@@ -12,6 +12,13 @@ commands:
       - setup_remote_docker:
           docker_layer_caching: true
 
+  checkout-all:
+    steps:
+      - checkout
+      - run:
+          name: Checkout submodules
+          command: git submodule update --init --recursive
+
   setup-automation:
     steps:
       - run:
@@ -26,24 +33,43 @@ jobs:
     machine:
       enabled: true
       image: ubuntu-2004:202010-01
-      resource_class: large
-#    docker:
-#      - image: debian:bullseye
+      resource_class: medium
     parameters:
-      platform:
+      platforms:
         type: string
     steps:
-#      - setup-executor
-      - checkout
-#      - setup-automation
+      - checkout-all
       - run:
           name: Setup automation
           command: |
-            git submodule update --init --recursive
             sudo ./deps/readies/bin/getpy3
             sudo ./deps/readies/bin/getdocker --just-enable-exp
             docker version
             docker login --username redisfab --password "$DOCKER_REDISFAB_PWD"
+      - run:
+          name: Build and publish
+          command: |
+            cd rmbuilder
+            for nick in <<parameters.platform>>"; do
+                sudo bash -l -c "make build X64=1 OSNICK=$nick"
+                ../deps/readies/bin/sep
+                if [[ $CIRCLE_BRANCH == master ]]; then
+                    sudo bash -l -c "make publish X64=1 OSNICK=$nick"
+                    ../deps/readies/bin/sep
+                fi
+            done
+          no_output_timeout: 30m
+
+  platform-builder-docker:
+    docker:
+      - image: debian:bullseye
+    parameters:
+      platform:
+        type: string
+    steps:
+      - setup-executor
+      - checkout-all
+      - setup-automation
       - run:
           name: Build and publish
           command: |
@@ -53,7 +79,6 @@ jobs:
                 sudo bash -l -c "make publish X64=1 OSNICK=<<parameters.platform>>"
             fi
           no_output_timeout: 30m
-
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
@@ -126,14 +151,14 @@ workflows:
           <<: *not-on-integ-branch
           matrix:
             parameters:
-              platform: [bullseye]
+              platforms: "bullseye"
           context: common
       - platform-builder:
           name: integ-build-<< matrix.platform >>
           <<: *on-integ-branch
           matrix:
             parameters:
-              platform: [bullseye, centos7, centos8, focal, bionic, xenial]
+              platforms: "bullseye centos7 centos8 focal bionic xenial"
           context: common
   weekly:
     triggers:
