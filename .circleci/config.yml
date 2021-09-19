@@ -23,22 +23,34 @@ commands:
 
 jobs:
   platform-builder:
-    docker:
-      - image: debian:bullseye
+    machine:
+      enabled: true
+      image: ubuntu-2004:202010-01
+      resource_class: large
+#    docker:
+#      - image: debian:bullseye
     parameters:
       platform:
         type: string
     steps:
       - setup-executor
       - checkout
-      - setup-automation
+#      - setup-automation
+      - run:
+          name: Setup automation
+          command: |
+            git submodule update --init --recursive
+            sudo ./deps/readies/bin/getpy3
+            sudo ./deps/readies/bin/getdocker --just-enable-exp
+            docker version
+            docker login --username redisfab --password "$DOCKER_REDISFAB_PWD"
       - run:
           name: Build and publish
           command: |
             cd rmbuilder
-            make build X64=1 OSNICK=<<parameters.platform>>
+            sudo bash -l -c "make build X64=1 OSNICK=<<parameters.platform>>"
             if [[ $CIRCLE_BRANCH == master ]]; then
-                make publish X64=1 OSNICK=<<parameters.platform>>
+                sudo bash -l -c "make publish X64=1 OSNICK=<<parameters.platform>>"
             fi
           no_output_timeout: 30m
 
@@ -121,7 +133,7 @@ workflows:
           <<: *on-integ-branch
           matrix:
             parameters:
-              platform: [bullseye, buster, centos7, centos8, focal, bionic, xenial]
+              platform: [bullseye, centos7, centos8, focal, bionic, xenial]
           context: common
   weekly:
     triggers:
@@ -136,5 +148,5 @@ workflows:
           name: weekly-build-<< matrix.platform >>
           matrix:
             parameters:
-              platform: [bullseye, buster, centos7, centos8, focal, bionic, xenial]
+              platform: [bullseye, centos7, centos8, focal, bionic, xenial]
           context: common
