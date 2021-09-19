@@ -50,7 +50,7 @@ jobs:
           name: Build and publish
           command: |
             cd rmbuilder
-            for nick in <<parameters.platforms>>"; do
+            for nick in <<parameters.platforms>>; do
                 sudo bash -l -c "make build X64=1 OSNICK=$nick"
                 ../deps/readies/bin/sep
                 if [[ $CIRCLE_BRANCH == master ]]; then
