@@ -33,7 +33,7 @@ jobs:
       platform:
         type: string
     steps:
-      - setup-executor
+#      - setup-executor
       - checkout
 #      - setup-automation
       - run:
