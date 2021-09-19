@@ -29,7 +29,7 @@ commands:
             docker login --username redisfab --password "$DOCKER_REDISFAB_PWD"
 
 jobs:
-  platform-builder:
+  platform-vm-builder:
     machine:
       enabled: true
       image: ubuntu-2004:202010-01
@@ -52,15 +52,13 @@ jobs:
             cd rmbuilder
             for nick in <<parameters.platforms>>; do
                 sudo bash -l -c "make build X64=1 OSNICK=$nick"
-                ../deps/readies/bin/sep
                 if [[ $CIRCLE_BRANCH == master ]]; then
                     sudo bash -l -c "make publish X64=1 OSNICK=$nick"
-                    ../deps/readies/bin/sep
                 fi
             done
           no_output_timeout: 30m
 
-  platform-builder-docker:
+  platform-docker-builder:
     docker:
       - image: debian:bullseye
     parameters:
@@ -74,9 +72,9 @@ jobs:
           name: Build and publish
           command: |
             cd rmbuilder
-            sudo bash -l -c "make build X64=1 OSNICK=<<parameters.platform>>"
+            make build X64=1 OSNICK=<<parameters.platform>>
             if [[ $CIRCLE_BRANCH == master ]]; then
-                sudo bash -l -c "make publish X64=1 OSNICK=<<parameters.platform>>"
+                make publish X64=1 OSNICK=<<parameters.platform>>
             fi
           no_output_timeout: 30m
 
@@ -146,15 +144,22 @@ workflows:
   version: 2
   build_all:
     jobs:
-      - platform-builder:
-          # name: builder
+      - platform-vm-builder:
+          name: vm-builder
           <<: *not-on-integ-branch
           platforms: "bullseye"
           context: common
-      - platform-builder:
-          name: integ-platform-builder
+      - platform-vm-builder:
+          name: integ-vm-builder
           <<: *on-integ-branch
-          platforms: "bullseye centos7 centos8 focal bionic xenial"
+          platforms: "bullseye"
+          context: common
+      - platform-docker-builder:
+          name: integ-docker-builder
+          <<: *on-integ-branch
+          matrix:
+            parameters:
+              platform: [centos7, centos8, focal, bionic, xenial]
           context: common
   weekly:
     triggers:
@@ -165,7 +170,13 @@ workflows:
             branches:
               only: master
     jobs:
-      - platform-builder:
-          name: weekly-build
-          platforms: "bullseye centos7 centos8 focal bionic xenial"
+      - platform-vm-builder:
+          name: weekly-vm-build
+          platforms: "bullseye"
+          context: common
+      - platform-docker-builder:
+          name: weekly-docker-build-<< matrix.platform >>
+          matrix:
+            parameters:
+              platform: [buster, centos7, centos8, focal, bionic, xenial]
           context: common
