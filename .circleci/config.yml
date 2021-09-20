@@ -155,7 +155,7 @@ workflows:
           platforms: "bullseye"
           context: common
       - platform-docker-builder:
-          name: integ-docker-builder
+          name: integ-build-<< matrix.platform >>
           <<: *on-integ-branch
           matrix:
             parameters:
