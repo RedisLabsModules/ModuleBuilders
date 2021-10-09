@@ -132,10 +132,9 @@ jobs:
           command: |
             cd clang
             bash -l -c "make build"
-            bash -l -c "make publish"
-#            if [[ $CIRCLE_BRANCH == master ]]; then
-#                sudo bash -l -c "make publish"
-#            fi
+            if [[ $CIRCLE_BRANCH == master ]]; then
+                bash -l -c "make publish"
+            fi
           no_output_timeout: 30m
 
 #----------------------------------------------------------------------------------------------------------------------------------
