@@ -43,7 +43,7 @@ jobs:
     machine:
       enabled: true
       image: ubuntu-2004:202010-01
-      resource_class: medium
+      resource_class: large
     parameters:
       platforms:
         type: string
@@ -69,9 +69,9 @@ jobs:
           command: |
             cd rmbuilder
             for nick in <<parameters.platforms>>; do
-                sudo bash -l -c "make build X64=1 OSNICK=$nick"
+                bash -l -c "make build X64=1 OSNICK=$nick"
                 if [[ $CIRCLE_BRANCH == master ]]; then
-                    sudo bash -l -c "make publish X64=1 OSNICK=$nick"
+                    bash -l -c "make publish X64=1 OSNICK=$nick"
                 fi
             done
           no_output_timeout: 30m
@@ -108,7 +108,7 @@ jobs:
     machine:
       enabled: true
       image: ubuntu-2004:202010-01
-      resource_class: medium
+      resource_class: large
     parameters:
       force:
         type: string
@@ -131,8 +131,8 @@ jobs:
           name: Build and publish
           command: |
             cd clang
-            sudo bash -l -c "make build"
-            sudo bash -l -c "make publish"
+            bash -l -c "make build"
+            bash -l -c "make publish"
 #            if [[ $CIRCLE_BRANCH == master ]]; then
 #                sudo bash -l -c "make publish"
 #            fi

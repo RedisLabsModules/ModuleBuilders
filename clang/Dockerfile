@@ -3,7 +3,6 @@
 ARG OSNICK=bullseye
 ARG CLANG_VER=13
 ARG NINJA_VER=1.10.1
-ARG REDIS_VER=6
 
 #----------------------------------------------------------------------------------------------
 FROM debian:$OSNICK
@@ -12,7 +11,6 @@ ARG OSNICK
 ARG CLANG_VER
 ARG CMAKE_VER
 ARG NINJA_VER
-ARG REDIS_VER
 
 WORKDIR /build
 SHELL ["/bin/bash", "-c"]
