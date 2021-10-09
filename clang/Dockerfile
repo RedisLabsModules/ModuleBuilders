@@ -1,7 +1,7 @@
 # BUILD redisfab/clang:${CLANG_VER}-${ARCH}-${OSNICK}
 
-ARG OSNICK=stretch
-ARG CLANG_VER=12
+ARG OSNICK=bullseye
+ARG CLANG_VER=13
 ARG CMAKE_VER=3.18.3
 ARG NINJA_VER=1.10.1
 ARG REDIS_VER=6
@@ -26,10 +26,9 @@ RUN apt-get install -y ca-certificates curl wget
 RUN apt-get install -y software-properties-common apt-transport-https
 RUN apt-get install -y git unzip lsb-release gnupg2 wget
 
-RUN wget https://people.debian.org/~paravoid/python-all/unofficial-python-all.asc -O /etc/apt/trusted.gpg.d/unofficial-python-all.asc
-RUN echo "deb http://people.debian.org/~paravoid/python-all $(lsb_release -sc) main" >> /etc/apt/sources.list.d/python-all.list
-RUN apt update
-RUN apt-get install -y python3.6
+RUN git clone https://github.com/RedisLabsModules/readies.git
+
+RUN ./readies/bin/getpy3
 
 RUN set -e ;\
     wget -q https://apt.llvm.org/llvm.sh ;\
@@ -46,9 +45,7 @@ RUN set -e ;\
     for f in llvm*-$CLANG_VER clang*-$CLANG_VER; do ln -sf $f ${f/%-$CLANG_VER/}; done
 
 # install cmake
-RUN set -e ;\
-    wget -q -O /tmp/cmake.sh https://github.com/Kitware/CMake/releases/download/v${CMAKE_VER}/cmake-${CMAKE_VER}-Linux-x86_64.sh ;\
-    sh /tmp/cmake.sh --skip-license --prefix=/usr/local
+RUN ./readies/bin/getcmake --usr
 
 # install ninja
 RUN set -e ;\
@@ -75,17 +72,12 @@ RUN set -e ;\
 #----------------------------------------------------------------------------------------------
 # Build Redis with asan/msan instrumentation
 
-RUN git clone https://github.com/RedisLabsModules/readies.git
-RUN wget -q -O /tmp/get-pip.py https://bootstrap.pypa.io/pip/3.5/get-pip.py
-RUN chmod +x /tmp/get-pip.py
-RUN python3 /tmp/get-pip.py
-RUN python3 -m pip install -r readies/paella/requirements.txt
-
 ADD redis.blacklist /build/
 
 # build sanitizer-enabled redis-server(s)
 # `--no-run` because Clang sanitizer requires SYS_PTRACE docker capability, which is not available in docker build
-RUN ./readies/bin/getredis --no-run -v6.0 --suffix asan-6.0 --clang-asan --clang-san-blacklist /build/redis.blacklist
-RUN ./readies/bin/getredis --no-run -v6.0 --suffix msan-6.0 --clang-msan --llvm-dir /opt/llvm-project/build-msan --clang-san-blacklist /build/redis.blacklist
-RUN ./readies/bin/getredis --no-run -v6.2 --suffix asan-6.2 --clang-asan --clang-san-blacklist /build/redis.blacklist
-RUN ./readies/bin/getredis --no-run -v6.2 --suffix msan-6.2 --clang-msan --llvm-dir /opt/llvm-project/build-msan --clang-san-blacklist /build/redis.blacklist
+RUN set -e ;\
+    for redis_ver in 6.0 6.2; do \
+        ./readies/bin/getredis --no-run -v $redis_ver --suffix asan-${redis_ver} --clang-asan --clang-san-blacklist /build/redis.blacklist ;\
+        ./readies/bin/getredis --no-run -v $redis_ver --suffix msan-${redis_ver} --clang-msan --llvm-dir /opt/llvm-project/build-msan --clang-san-blacklist /build/redis.blacklist ;\
+    done

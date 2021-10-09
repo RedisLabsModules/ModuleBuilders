@@ -199,10 +199,12 @@ workflows:
       - platform-vm-builder:
           name: weekly-vm-build
           platforms: "bullseye"
+          force: "1"
           context: common
       - platform-docker-builder:
           name: weekly-docker-build-<< matrix.platform >>
           matrix:
             parameters:
               platform: [buster, centos7, centos8, focal, bionic, xenial]
+              force: "1"
           context: common

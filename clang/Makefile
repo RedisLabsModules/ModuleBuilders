@@ -1,5 +1,5 @@
 
-CLANG_VER ?= 12
+CLANG_VER ?= 13
 OSNICK ?= bullseye
 ARCH=x64
 REDIS_VER=6
