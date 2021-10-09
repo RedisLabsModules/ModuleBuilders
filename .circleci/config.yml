@@ -206,5 +206,5 @@ workflows:
           matrix:
             parameters:
               platform: [buster, centos7, centos8, focal, bionic, xenial]
-              force: "1"
+          force: "1"
           context: common
