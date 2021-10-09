@@ -104,6 +104,35 @@ jobs:
             fi
           no_output_timeout: 30m
 
+  clang-builder:
+    machine:
+      enabled: true
+      image: ubuntu-2004:202010-01
+      resource_class: medium
+    steps:
+      - early-returns
+#      - run:
+#          name: Skip?
+#          command: |
+#            [[ "<<parameters.force>>" != 1 && $CIRCLE_BRANCH != *rmbuilder ]] && circleci step halt
+      - checkout-all
+      - run:
+          name: Setup automation
+          command: |
+            sudo ./deps/readies/bin/getpy3
+            sudo ./deps/readies/bin/getdocker --just-enable-exp
+            docker version
+            docker login --username redisfab --password "$DOCKER_REDISFAB_PWD"
+      - run:
+          name: Build and publish
+          command: |
+            cd clang
+            sudo bash -l -c "make build"
+            if [[ $CIRCLE_BRANCH == master ]]; then
+                sudo bash -l -c "make publish"
+            fi
+          no_output_timeout: 30m
+
 #----------------------------------------------------------------------------------------------------------------------------------
 
 on-any-branch: &on-any-branch
@@ -186,6 +215,8 @@ workflows:
           matrix:
             parameters:
               platform: [centos7, centos8, focal, bionic, xenial]
+          context: common
+      - clang-builder:
           context: common
   weekly:
     triggers:
