@@ -126,13 +126,18 @@ jobs:
             sudo ./deps/readies/bin/getpy3
             sudo ./deps/readies/bin/getdocker --just-enable-exp
             docker version
-            docker login --username redisfab --password "$DOCKER_REDISFAB_PWD"
       - run:
-          name: Build and publish
+          name: Build
           command: |
             cd clang
             bash -l -c "make build"
+          no_output_timeout: 30m
+      - run:
+          name: Publish
+          command: |
+            cd clang
             if [[ $CIRCLE_BRANCH == master ]]; then
+                docker login --username redisfab --password "$DOCKER_REDISFAB_PWD"
                 bash -l -c "make publish"
             fi
           no_output_timeout: 30m
@@ -221,6 +226,11 @@ workflows:
               platform: [centos7, centos8, focal, bionic, xenial]
           context: common
       - clang-builder:
+          <<: *not-on-integ-branch
+          context: common
+      - clang-builder:
+          name: integ-clang-builder
+          <<: *on-integ-branch
           context: common
           force: "1"
   weekly:
@@ -244,3 +254,7 @@ workflows:
               platform: [buster, centos7, centos8, focal, bionic, xenial]
           force: "1"
           context: common
+      - clang-builder:
+          name: weekly-clang-builder
+          context: common
+          force: "1"
