@@ -1,5 +1,4 @@
 version: 2.1
-version: 2.1
 
 commands:
   early-returns:
@@ -133,8 +132,9 @@ jobs:
           command: |
             cd clang
             sudo bash -l -c "make build"
+            sudo bash -l -c "make publish"
 #            if [[ $CIRCLE_BRANCH == master ]]; then
-                sudo bash -l -c "make publish"
+#                sudo bash -l -c "make publish"
 #            fi
           no_output_timeout: 30m
 
