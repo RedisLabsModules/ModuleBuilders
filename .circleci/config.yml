@@ -1,4 +1,5 @@
 version: 2.1
+version: 2.1
 
 commands:
   early-returns:
@@ -109,12 +110,16 @@ jobs:
       enabled: true
       image: ubuntu-2004:202010-01
       resource_class: medium
+    parameters:
+      force:
+        type: string
+        default: ""
     steps:
       - early-returns
-#      - run:
-#          name: Skip?
-#          command: |
-#            [[ "<<parameters.force>>" != 1 && $CIRCLE_BRANCH != *rmbuilder ]] && circleci step halt
+      - run:
+          name: Skip?
+          command: |
+            [[ "<<parameters.force>>" != 1 && $CIRCLE_BRANCH != *clang ]] && circleci step halt
       - checkout-all
       - run:
           name: Setup automation
@@ -128,9 +133,9 @@ jobs:
           command: |
             cd clang
             sudo bash -l -c "make build"
-            if [[ $CIRCLE_BRANCH == master ]]; then
+#            if [[ $CIRCLE_BRANCH == master ]]; then
                 sudo bash -l -c "make publish"
-            fi
+#            fi
           no_output_timeout: 30m
 
 #----------------------------------------------------------------------------------------------------------------------------------
@@ -218,6 +223,7 @@ workflows:
           context: common
       - clang-builder:
           context: common
+          force: "1"
   weekly:
     triggers:
       - schedule:
