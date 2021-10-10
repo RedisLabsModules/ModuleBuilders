@@ -90,7 +90,7 @@ jobs:
       - run:
           name: Skip?
           command: |
-            [[ "<<parameters.force>>" != 1 && $CIRCLE_BRANCH != *rmbuilder ]] && circleci step halt
+            if [[ "<<parameters.force>>" != 1 && $CIRCLE_BRANCH != *rmbuilder ]]; then circleci step halt; fi
       - setup-executor
       - checkout-all
       - setup-automation
