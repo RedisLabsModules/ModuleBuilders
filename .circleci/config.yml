@@ -154,6 +154,7 @@ workflows:
           <<: *on-integ-branch
           platforms: "bullseye"
           context: common
+          force: "1"
       - platform-docker-builder:
           name: integ-build-<< matrix.platform >>
           <<: *on-integ-branch
@@ -161,6 +162,15 @@ workflows:
             parameters:
               platform: [centos7, centos8, focal, bionic, xenial]
           context: common
+          force: "1"
+      - clang-builder:
+          <<: *not-on-integ-branch
+          context: common
+      - clang-builder:
+          name: integ-clang-builder
+          <<: *on-integ-branch
+          context: common
+          force: "1"
   weekly:
     triggers:
       - schedule:
