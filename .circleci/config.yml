@@ -1,6 +1,16 @@
 version: 2.1
 
 commands:
+  early-returns:
+    steps:
+      - run:
+          name: Early return if this branch should ignore CI
+          command: |
+            if [[ $CIRCLE_BRANCH == *noci ]]; then
+              echo "Identifies as actively ignoring CI, no testing required."
+              circleci step halt
+            fi
+
   setup-executor:
     steps:
       - run:
@@ -33,11 +43,19 @@ jobs:
     machine:
       enabled: true
       image: ubuntu-2004:202010-01
-      resource_class: medium
+      resource_class: large
     parameters:
       platforms:
         type: string
+      force:
+        type: string
+        default: ""
     steps:
+      - early-returns
+      - run:
+          name: Skip?
+          command: |
+            if [[ "<<parameters.force>>" != 1 && $CIRCLE_BRANCH != *rmbuilder ]]; then circleci step halt; fi
       - checkout-all
       - run:
           name: Setup automation
@@ -51,9 +69,9 @@ jobs:
           command: |
             cd rmbuilder
             for nick in <<parameters.platforms>>; do
-                sudo bash -l -c "make build X64=1 OSNICK=$nick"
+                bash -l -c "make build X64=1 OSNICK=$nick"
                 if [[ $CIRCLE_BRANCH == master ]]; then
-                    sudo bash -l -c "make publish X64=1 OSNICK=$nick"
+                    bash -l -c "make publish X64=1 OSNICK=$nick"
                 fi
             done
           no_output_timeout: 30m
@@ -64,7 +82,15 @@ jobs:
     parameters:
       platform:
         type: string
+      force:
+        type: string
+        default: ""
     steps:
+      - early-returns
+      - run:
+          name: Skip?
+          command: |
+            [[ "<<parameters.force>>" != 1 && $CIRCLE_BRANCH != *rmbuilder ]] && circleci step halt
       - setup-executor
       - checkout-all
       - setup-automation
@@ -75,6 +101,44 @@ jobs:
             make build X64=1 OSNICK=<<parameters.platform>>
             if [[ $CIRCLE_BRANCH == master ]]; then
                 make publish X64=1 OSNICK=<<parameters.platform>>
+            fi
+          no_output_timeout: 30m
+
+  clang-builder:
+    machine:
+      enabled: true
+      image: ubuntu-2004:202010-01
+      resource_class: large
+    parameters:
+      force:
+        type: string
+        default: ""
+    steps:
+      - early-returns
+      - run:
+          name: Skip?
+          command: |
+            if [[ "<<parameters.force>>" != 1 && $CIRCLE_BRANCH != *clang ]]; then circleci step halt; fi
+      - checkout-all
+      - run:
+          name: Setup automation
+          command: |
+            sudo ./deps/readies/bin/getpy3
+            sudo ./deps/readies/bin/getdocker --just-enable-exp
+            docker version
+      - run:
+          name: Build
+          command: |
+            cd clang
+            bash -l -c "make build"
+          no_output_timeout: 30m
+      - run:
+          name: Publish
+          command: |
+            cd clang
+            if [[ $CIRCLE_BRANCH == master ]]; then
+                docker login --username redisfab --password "$DOCKER_REDISFAB_PWD"
+                bash -l -c "make publish"
             fi
           no_output_timeout: 30m
 
@@ -183,10 +247,16 @@ workflows:
       - platform-vm-builder:
           name: weekly-vm-build
           platforms: "bullseye"
+          force: "1"
           context: common
       - platform-docker-builder:
           name: weekly-docker-build-<< matrix.platform >>
           matrix:
             parameters:
               platform: [buster, centos7, centos8, focal, bionic, xenial]
+          force: "1"
           context: common
+      - clang-builder:
+          name: weekly-clang-builder
+          context: common
+          force: "1"
