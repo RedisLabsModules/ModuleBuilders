@@ -38,19 +38,10 @@ RUN set -e ;\
 #----------------------------------------------------------------------------------------------
 # Install Clang
 
-RUN set -e ;\
-    wget -q https://apt.llvm.org/llvm.sh ;\
-    chmod +x llvm.sh ;\
-    ./llvm.sh $CLANG_VER
-RUN apt-get install -y clang-tools-$CLANG_VER
+RUN ./readies/bin/getclang --modern
 
 #----------------------------------------------------------------------------------------------
 # Build C++ runtime libs with msan instrumentation
-
-# arrange llvm-* and clang-* version-neutral symlinks
-RUN set -e ;\
-    cd /usr/bin ;\
-    for f in llvm*-$CLANG_VER clang*-$CLANG_VER; do ln -sf $f ${f/%-$CLANG_VER/}; done
 
 # build llvm for msan into /opt/llvm-project/build-msan
 RUN set -e ;\
