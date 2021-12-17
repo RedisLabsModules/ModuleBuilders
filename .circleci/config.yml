@@ -208,11 +208,19 @@ workflows:
   version: 2
   build_all:
     jobs:
-      - platform-vm-builder:
-          name: vm-builder
+      - platform-docker-builder:
+          name: integ-build-<< matrix.platform >>
           <<: *not-on-integ-branch
-          platforms: "bullseye"
+          matrix:
+            parameters:
+              platform: [bullseye]
           context: common
+#          force: "1"
+#      - platform-vm-builder:
+#          name: vm-builder
+#          <<: *not-on-integ-branch
+#          platforms: "bullseye"
+#          context: common
       - platform-vm-builder:
           name: integ-vm-builder
           <<: *on-integ-branch
