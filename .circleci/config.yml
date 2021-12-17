@@ -98,7 +98,7 @@ jobs:
           name: Build and publish
           command: |
             cd rmbuilder
-            make build X64=1 OSNICK=<<parameters.platform>>
+            make build X64=1 OSNICK=<<parameters.platform>> PULL=1
             if [[ $CIRCLE_BRANCH == master ]]; then
                 make publish X64=1 OSNICK=<<parameters.platform>>
             fi
