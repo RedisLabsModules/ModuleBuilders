@@ -98,7 +98,7 @@ jobs:
           name: Build and publish
           command: |
             cd rmbuilder
-            make build X64=1 OSNICK=<<parameters.platform>> PULL=1
+            make build X64=1 OSNICK=<<parameters.platform>>
             if [[ $CIRCLE_BRANCH == master ]]; then
                 make publish X64=1 OSNICK=<<parameters.platform>>
             fi
@@ -208,19 +208,11 @@ workflows:
   version: 2
   build_all:
     jobs:
-      - platform-docker-builder:
-          name: integ-build-<< matrix.platform >>
+      - platform-vm-builder:
+          name: vm-builder
           <<: *not-on-integ-branch
-          matrix:
-            parameters:
-              platform: [bullseye]
+          platforms: "bullseye"
           context: common
-          force: "1"
-#      - platform-vm-builder:
-#          name: vm-builder
-#          <<: *not-on-integ-branch
-#          platforms: "bullseye"
-#          context: common
       - platform-vm-builder:
           name: integ-vm-builder
           <<: *on-integ-branch
