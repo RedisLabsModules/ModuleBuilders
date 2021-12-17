@@ -62,16 +62,18 @@ jobs:
           command: |
             sudo ./deps/readies/bin/getpy3
             sudo ./deps/readies/bin/getdocker --just-enable-exp
+            sudo usermod -aG docker $USER
             docker version
             docker login --username redisfab --password "$DOCKER_REDISFAB_PWD"
       - run:
           name: Build and publish
+          shell: /bin/bash -l -eo pipefail
           command: |
             cd rmbuilder
             for nick in <<parameters.platforms>>; do
-                bash -l -c "make build X64=1 OSNICK=$nick"
+                make build X64=1 OSNICK=$nick
                 if [[ $CIRCLE_BRANCH == master ]]; then
-                    bash -l -c "make publish X64=1 OSNICK=$nick"
+                    make publish X64=1 OSNICK=$nick
                 fi
             done
           no_output_timeout: 30m
@@ -213,6 +215,7 @@ workflows:
           <<: *not-on-integ-branch
           platforms: "bullseye"
           context: common
+          force: "1"
       - platform-vm-builder:
           name: integ-vm-builder
           <<: *on-integ-branch
