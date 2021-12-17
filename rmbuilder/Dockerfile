@@ -23,6 +23,9 @@ ADD deps/ /build/deps
 
 # RUN FORCE=1 ./deps/readies/bin/getupdates
 
+RUN apt-get -qq update
+RUN apt-get install -y software-properties-common apt-transport-https
+
 RUN FORCE=1 ./deps/readies/bin/getpy2
 RUN FORCE=1 ./deps/readies/bin/getpy3
 RUN python2 ./system-setup.py
