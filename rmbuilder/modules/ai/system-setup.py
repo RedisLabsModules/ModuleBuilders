@@ -20,20 +20,16 @@ class RedisAISetup(paella.Setup):
         self.install_downloaders()
         self.pip_install("wheel")
 
-        self.install("git unzip") # patchelf
+        self.install("git unzip")
         if self.osnick != 'centos8':
             self.install("coreutils") # for realpath
 
     def debian_compat(self):
         self.run("%s/bin/enable-utf8" % READIES)
         self.run("%s/bin/getgcc" % READIES)
-        self.install("gawk")
-        self.install("libssl-dev")
-        self.install("python3-regex")
-        self.install("python3-networkx python3-numpy")
+        self.install("gawk libssl-dev python3-regex python3-networkx libmpich-dev libopenblas-dev")
         if self.platform.is_arm():
             self.install("python3-dev") # python3-skimage
-        self.install("libmpich-dev libopenblas-dev") # for libtorch
         self.install_git_lfs_on_linux()
 
     def redhat_compat(self):
@@ -70,10 +66,7 @@ class RedisAISetup(paella.Setup):
 
     def common_last(self):
         self.run("%s/bin/getclang --format" % READIES)
-        if self.platform == "arm":
-            self.run("%s/bin/getcmake" % READIES)
-        else:
-            self.run("%s/bin/getcmake" % READIES)
+        self.run("%s/bin/getcmake --usr" % READIES)
 
         # self.run("{PYTHON} {READIES}/bin/getrmpytools".format(PYTHON=self.python, READIES=READIES))
 
