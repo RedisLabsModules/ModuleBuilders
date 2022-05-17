@@ -66,7 +66,10 @@ class RedisAISetup(paella.Setup):
 
     def common_last(self):
         self.run("%s/bin/getclang --format" % READIES)
-        self.run("%s/bin/getcmake --usr" % READIES)
+        if self.platform == "arm":
+            self.run("%s/bin/getcmake --from-repo" % READIES)
+        else:
+            self.run("%s/bin/getcmake" % READIES)
 
         # self.run("{PYTHON} {READIES}/bin/getrmpytools".format(PYTHON=self.python, READIES=READIES))
 
