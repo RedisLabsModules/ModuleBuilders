@@ -224,7 +224,7 @@ workflows:
           <<: *on-integ-branch
           matrix:
             parameters:
-              platform: [centos7, centos8, focal, bionic, xenial]
+              platform: [centos7, rocky8, jammy, focal, bionic, xenial]
           context: common
           force: "1"
       - clang-builder:
@@ -253,7 +253,7 @@ workflows:
           name: weekly-docker-build-<< matrix.platform >>
           matrix:
             parameters:
-              platform: [buster, centos7, centos8, focal, bionic, xenial]
+              platform: [buster, centos7, rocky8, jammy, focal, bionic, xenial]
           force: "1"
           context: common
       - clang-builder:
