@@ -13,20 +13,20 @@ import paella
 #----------------------------------------------------------------------------------------------
 
 class RedisJSONSetup(paella.Setup):
-    def __init__(self, nop=False):
-        paella.Setup.__init__(self, nop)
+    def __init__(self, args):
+        paella.Setup.__init__(self, args.nop)
 
     def common_first(self):
         self.install_downloaders()
-        self.pip_install("wheel")
-        self.pip_install("setuptools --upgrade")
+        self.run("%s/bin/enable-utf8" % READIES, sudo=self.os != 'macos')
+        self.install("git unzip rsync")
 
-        self.install("git")
-
+        if self.osnick == 'ol8':
+            self.install("tar")
         self.run("%s/bin/getclang --modern" % READIES)
         if not self.has_command("rustc"):
             self.run("%s/bin/getrust" % READIES)
-        self.run("%s/bin/getcmake" % READIES)
+        self.run("%s/bin/getcmake --usr" % READIES)
 
     def debian_compat(self):
         self.run("%s/bin/getgcc" % READIES)
@@ -39,13 +39,16 @@ class RedisJSONSetup(paella.Setup):
         self.run("%s/bin/getgcc" % READIES)
 
     def macos(self):
+        self.install_gnu_utils()
+        self.install("binutils")
         self.run("%s/bin/getgcc" % READIES)
 
     def common_last(self):
-        # self.run("python3 %s/bin/getrmpytools" % READIES)
+        # self.run("{PYTHON} {READIES}/bin/getrmpytools".format(PYTHON=self.python, READIES=READIES))
         # self.pip_install("-r %s/tests/pytest/requirements.txt" % ROOT)
         self.pip_install("toml")
-        self.pip_install("awscli")
+        self.pip_install("pudb awscli")
+        self.pip_install("gevent")
 
 #----------------------------------------------------------------------------------------------
 
@@ -53,4 +56,4 @@ parser = argparse.ArgumentParser(description='Set up system for build.')
 parser.add_argument('-n', '--nop', action="store_true", help='no operation')
 args = parser.parse_args()
 
-RedisJSONSetup(nop = args.nop).setup()
+RedisJSONSetup(args).setup()

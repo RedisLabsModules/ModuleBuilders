@@ -64,8 +64,8 @@ class RedisModuleBuilderSetup(paella.Setup):
 
     #------------------------------------------------------------------------------------------
     def common_last(self):
-        self.run("python2 {READIES}/bin/getrmpytools --reinstall".format(PYTHON=self.python, READIES=READIES))
-        self.run("python3 {READIES}/bin/getrmpytools --reinstall".format(PYTHON=self.python, READIES=READIES))
+        # self.run("python2 {READIES}/bin/getrmpytools --reinstall".format(PYTHON=self.python, READIES=READIES))
+        self.run("python3 {READIES}/bin/getrmpytools --reinstall --modern".format(PYTHON=self.python, READIES=READIES))
         self.install("valgrind")
         self.pip_install("pytest rmtest")
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 import sys
 import os
@@ -32,12 +32,13 @@ class RedisGearsSetup(paella.Setup):
         self.install("lsb-release")
         self.install("zip unzip gawk")
         self.install("python-dev")
+        self.install("locales-all")
 
         # pip cannot build gevent on ARM
         if self.platform.is_arm() and self.dist == 'ubuntu' and self.os_version[0] < 20:
             self.install("python-gevent")
         else:
-            self.pip_install("gevent~=1.2.0")
+            self.pip_install("gevent")
 
     def redhat_compat(self):
         self.run("%s/bin/getgcc --modern" % READIES)
@@ -53,8 +54,8 @@ class RedisGearsSetup(paella.Setup):
         if self.arch == 'x64':
             self.install_linux_gnu_tar()
 
-        if self.platform.is_arm() or self.dist == 'centos' and self.os_version[0] == 8:
-            self.install("python3-gevent python3-ujson")
+        if self.platform.is_arm():
+            self.install("python-gevent python-ujson")
         else:
             self.pip_install("gevent ujson")
 
