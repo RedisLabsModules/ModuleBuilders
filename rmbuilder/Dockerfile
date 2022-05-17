@@ -1,6 +1,6 @@
 # BUILD redisfab/rmbuilder:${REDIS_VER}-${ARCH}-${OSNICK}
 
-ARG REDIS_VER=6.2.6
+ARG REDIS_VER=6.2.7
 ARG OSNICK=bullseye
 ARG OS=debian:bullseye-slim
 

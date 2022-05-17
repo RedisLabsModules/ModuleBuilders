@@ -1,0 +1,10 @@
+
+FROM redisfab/hugo:latest
+
+ADD . /build
+WORKDIR /build
+RUN cd website; npm install
+
+RUN make init stack
+RUN make serve IP=0.0.0.0
+
