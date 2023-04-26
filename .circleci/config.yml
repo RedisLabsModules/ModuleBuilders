@@ -237,13 +237,20 @@ workflows:
           context: common
           force: "1"
       - clang-builder:
+          name: clang-builder-<< matrix.osnick >>
           <<: *not-on-integ-branch
+          matrix:
+            parameters:
+              osnick: [bulseye, focal]
           context: common
       - clang-builder:
-          name: integ-clang-builder
+          name: integ-clang-builder-<< matrix.osnick >>
           <<: *on-integ-branch
+          matrix:
+            parameters:
+              osnick: [bulseye, focal]
           context: common
-          force: ""
+          force: "1"
   weekly:
     triggers:
       - schedule:
@@ -269,6 +276,6 @@ workflows:
           name: weekly-clang-builder-<< matrix.osnick >>
           matrix:
             parameters:
-              platform: [bullseye, focal]
+              osnick: [bullseye, focal]
           force: "1"
           context: common
