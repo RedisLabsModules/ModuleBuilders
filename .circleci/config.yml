@@ -130,17 +130,21 @@ jobs:
             docker version
       - run:
           name: Build
+          shell: /bin/bash -l -eo pipefail
           command: |
             cd clang
-            bash -l -c "make build"
+            make build OSNICK=bullseye
+            make build OSNICK=jammy
           no_output_timeout: 30m
       - run:
           name: Publish
+          shell: /bin/bash -l -eo pipefail
           command: |
             cd clang
             if [[ $CIRCLE_BRANCH == master ]]; then
                 docker login --username redisfab --password "$DOCKER_REDISFAB_PWD"
-                bash -l -c "make publish"
+                make publish OSNICK=bullseye
+                make publish OSNICK=jammy
             fi
           no_output_timeout: 30m
 
