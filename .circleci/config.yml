@@ -241,14 +241,14 @@ workflows:
           <<: *not-on-integ-branch
           matrix:
             parameters:
-              osnick: [bulseye, focal]
+              osnick: [bullseye, focal]
           context: common
       - clang-builder:
           name: integ-clang-builder-<< matrix.osnick >>
           <<: *on-integ-branch
           matrix:
             parameters:
-              osnick: [bulseye, focal]
+              osnick: [bullseye, focal]
           context: common
           force: "1"
   weekly:
