@@ -18,8 +18,9 @@ commands:
           command: |
             apt-get -qq update
             apt-get -q install -y git openssh-client curl ca-certificates make tar gzip
-            bash <(curl -fsSL https://get.docker.com)
+            bash <(curl -fsSL https://raw.githubusercontent.com/docker/docker-install/master/install.sh)
       - setup_remote_docker:
+          version: 20.10.14
           docker_layer_caching: true
 
   checkout-all:
@@ -55,7 +56,7 @@ jobs:
       - run:
           name: Skip?
           command: |
-            if [[ "<<parameters.force>>" != 1 && $CIRCLE_BRANCH != *rmbuilder ]]; then circleci step halt; fi
+            if [[ "<<parameters.force>>" != 1 && $CIRCLE_BRANCH != *rmbuilder* ]]; then circleci step halt; fi
       - checkout-all
       - run:
           name: Setup automation
@@ -92,7 +93,7 @@ jobs:
       - run:
           name: Skip?
           command: |
-            if [[ "<<parameters.force>>" != 1 && $CIRCLE_BRANCH != *rmbuilder ]]; then circleci step halt; fi
+            if [[ "<<parameters.force>>" != 1 && $CIRCLE_BRANCH != *rmbuilder* ]]; then circleci step halt; fi
       - setup-executor
       - checkout-all
       - setup-automation
@@ -112,6 +113,9 @@ jobs:
       image: ubuntu-2004:202010-01
       resource_class: large
     parameters:
+      osnick:
+        type: string
+        default: "bullseye"
       force:
         type: string
         default: ""
@@ -120,7 +124,7 @@ jobs:
       - run:
           name: Skip?
           command: |
-            if [[ "<<parameters.force>>" != 1 && $CIRCLE_BRANCH != *clang ]]; then circleci step halt; fi
+            if [[ "<<parameters.force>>" != 1 && $CIRCLE_BRANCH != *clang* ]]; then circleci step halt; fi
       - checkout-all
       - run:
           name: Setup automation
@@ -130,17 +134,19 @@ jobs:
             docker version
       - run:
           name: Build
+          shell: /bin/bash -l -eo pipefail
           command: |
             cd clang
-            bash -l -c "make build"
+            make build OSNICK=<<parameters.osnick>>
           no_output_timeout: 30m
       - run:
           name: Publish
+          shell: /bin/bash -l -eo pipefail
           command: |
             cd clang
             if [[ $CIRCLE_BRANCH == master ]]; then
                 docker login --username redisfab --password "$DOCKER_REDISFAB_PWD"
-                bash -l -c "make publish"
+                make publish OSNICK=<<parameters.osnick>>
             fi
           no_output_timeout: 30m
 
@@ -215,7 +221,7 @@ workflows:
           <<: *not-on-integ-branch
           platforms: "bullseye"
           context: common
-          force: "1"
+          force: ""
       - platform-vm-builder:
           name: integ-vm-builder
           <<: *on-integ-branch
@@ -231,11 +237,18 @@ workflows:
           context: common
           force: "1"
       - clang-builder:
+          name: clang-builder-<< matrix.osnick >>
           <<: *not-on-integ-branch
+          matrix:
+            parameters:
+              osnick: [bullseye, focal]
           context: common
       - clang-builder:
-          name: integ-clang-builder
+          name: integ-clang-builder-<< matrix.osnick >>
           <<: *on-integ-branch
+          matrix:
+            parameters:
+              osnick: [bullseye, focal]
           context: common
           force: "1"
   weekly:
@@ -260,6 +273,9 @@ workflows:
           force: "1"
           context: common
       - clang-builder:
-          name: weekly-clang-builder
-          context: common
+          name: weekly-clang-builder-<< matrix.osnick >>
+          matrix:
+            parameters:
+              osnick: [bullseye, focal]
           force: "1"
+          context: common

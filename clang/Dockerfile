@@ -1,13 +1,15 @@
 # BUILD redisfab/clang:${CLANG_VER}-${ARCH}-${OSNICK}
 
 ARG OSNICK=bullseye
-ARG CLANG_VER=13
+ARG OS=debian:bullseye
+ARG CLANG_VER=17
 ARG NINJA_VER=1.10.1
 
 #----------------------------------------------------------------------------------------------
-FROM debian:$OSNICK
+FROM ${OS}
 
 ARG OSNICK
+ARG OS
 ARG CLANG_VER
 ARG CMAKE_VER
 ARG NINJA_VER
@@ -19,9 +21,9 @@ SHELL ["/bin/bash", "-c"]
 # Install prerequisites
 
 RUN apt-get -qq update
-RUN apt-get install -y ca-certificates curl wget
-RUN apt-get install -y software-properties-common apt-transport-https
-RUN apt-get install -y git unzip lsb-release gnupg2 wget
+RUN apt-get install -qy ca-certificates curl wget
+RUN apt-get install -qy software-properties-common apt-transport-https
+RUN apt-get install -qy git unzip lsb-release gnupg2 wget
 
 RUN git clone https://github.com/RedisLabsModules/readies.git
 
@@ -38,25 +40,25 @@ RUN set -e ;\
 #----------------------------------------------------------------------------------------------
 # Install Clang
 
-RUN ./readies/bin/getclang --modern
+RUN ./readies/bin/getclang -v ${CLANG_VER}
 
 #----------------------------------------------------------------------------------------------
 # Build C++ runtime libs with msan instrumentation
 
 # build llvm for msan into /opt/llvm-project/build-msan
-RUN set -e ;\
-    cd /opt ;\
-    git clone --depth=1 https://github.com/llvm/llvm-project ;\
-    cd llvm-project ;\
-    mkdir build-msan ;\
-    cd build-msan ;\
-    cmake -GNinja ../llvm \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DLLVM_ENABLE_PROJECTS="libcxx;libcxxabi" \
-        -DCMAKE_C_COMPILER=clang \
-        -DCMAKE_CXX_COMPILER=clang++ \
-        -DLLVM_USE_SANITIZER=MemoryWithOrigins ;\
-    cmake --build . -- cxx cxxabi
+# RUN set -e ;\
+#     cd /opt ;\
+#     git clone --depth=1 https://github.com/llvm/llvm-project ;\
+#     cd llvm-project ;\
+#     mkdir build-msan ;\
+#     cd build-msan ;\
+#     cmake -GNinja ../llvm \
+#         -DCMAKE_BUILD_TYPE=Release \
+#         -DLLVM_ENABLE_PROJECTS="libcxx;libcxxabi" \
+#         -DCMAKE_C_COMPILER=clang \
+#         -DCMAKE_CXX_COMPILER=clang++ \
+#         -DLLVM_USE_SANITIZER=MemoryWithOrigins ;\
+#     cmake --build . -- cxx cxxabi
 
 #----------------------------------------------------------------------------------------------
 # Build Redis with asan/msan instrumentation
@@ -66,7 +68,12 @@ ADD redis.blacklist /build/
 # build sanitizer-enabled redis-server(s)
 # `--no-run` because Clang sanitizer requires SYS_PTRACE docker capability, which is not available in docker build
 RUN set -e ;\
-    for redis_ver in 6.0 6.2; do \
+    for redis_ver in 6.0 6.2 7.0 7.2-rc1; do \
         ./readies/bin/getredis --no-run -v $redis_ver --suffix asan-${redis_ver} --own-openssl --clang-asan --clang-san-blacklist /build/redis.blacklist ;\
-        ./readies/bin/getredis --no-run -v $redis_ver --suffix msan-${redis_ver} --own-openssl --clang-msan --llvm-dir /opt/llvm-project/build-msan --clang-san-blacklist /build/redis.blacklist ;\
     done
+
+# RUN set -e ;\
+#     for redis_ver in 6.0 6.2 7.0; do \
+#         ./readies/bin/getredis --no-run -v $redis_ver --suffix asan-${redis_ver} --own-openssl --clang-asan --clang-san-blacklist /build/redis.blacklist ;\
+#         ./readies/bin/getredis --no-run -v $redis_ver --suffix msan-${redis_ver} --own-openssl --clang-msan --llvm-dir /opt/llvm-project/build-msan --clang-san-blacklist /build/redis.blacklist ;\
+#     done
