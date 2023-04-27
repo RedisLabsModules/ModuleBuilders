@@ -1,4 +1,4 @@
-CLANG_VER ?= 17
+CLANG_VER ?= 16
 override OSNICK ?= bullseye
 
 ROOT=..
@@ -7,7 +7,6 @@ include $(ROOT)/deps/readies/mk/main
 
 include $(MK)/osnick.defs
 
-# OS ?= debian:bullseye
 ARCH=x64
 
 IMAGE=redisfab/clang:$(CLANG_VER)-$(ARCH)-$(OSNICK)
