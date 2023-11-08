@@ -2,7 +2,7 @@
 
 ARG REDIS_VER=6.2.7
 ARG OSNICK=bullseye
-ARG OS=debian:bullseye-slim
+ARG OS=debian:11.3-slim
 
 # ARCH=x64|arm64v8|arm32v7
 ARG ARCH=x64
