@@ -6,7 +6,7 @@ ARG VERSION=3.7.2
 ARG OSNICK=bionic
 
 # OS=debian:buster-slim|debian:stretch-slim|ubuntu:bionic
-ARG OS=ubuntu:bionic
+ARG OS=ubuntu:18.04
 
 # ARCH=x64|arm64v8|arm32v7
 ARG ARCH=arm64v8
